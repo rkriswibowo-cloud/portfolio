@@ -66,6 +66,7 @@ $stats = [
     'users' => (int) $pdo->query('SELECT COUNT(*) FROM users')->fetchColumn(),
     'active_users' => (int) $pdo->query('SELECT COUNT(*) FROM users WHERE COALESCE(is_active, 1) = 1')->fetchColumn(),
     'inactive_users' => (int) $pdo->query('SELECT COUNT(*) FROM users WHERE COALESCE(is_active, 1) = 0')->fetchColumn(),
+    'tech_stacks' => count(get_tech_stacks($pdo, false)),
 ];
 
 $monitoringTotal = count_admin_user_course_monitoring($pdo);
@@ -125,6 +126,13 @@ admin_header('Dashboard');
           <span><i class="uil uil-envelope"></i> Pesan Contact</span>
           <strong><?= e((string) $stats['messages']) ?></strong>
           <small>pesan masuk</small>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-4">
+        <div class="admin-card stat-card stat-card-modern">
+          <span><i class="uil uil-layer-group"></i> Tech Stack</span>
+          <strong><?= e((string) $stats['tech_stacks']) ?></strong>
+          <small>teknologi di slider</small>
         </div>
       </div>
     </div>

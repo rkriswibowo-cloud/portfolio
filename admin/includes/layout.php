@@ -17,6 +17,7 @@ function admin_header(string $title): void
         'courses.php' => ['label' => 'Courses', 'icon' => 'uil-book-open'],
         'course_tokens.php' => ['label' => 'Token Course', 'icon' => 'uil-key-skeleton'],
         'resume.php' => ['label' => 'Resume', 'icon' => 'uil-file-alt'],
+        'tech_stack.php' => ['label' => 'Tech Stack', 'icon' => 'uil-layer-group'],
         'contact.php' => ['label' => 'Contact', 'icon' => 'uil-envelope'],
     ];
     $toastIcon = ($flash['type'] ?? '') === 'danger' ? 'uil-exclamation-triangle' : 'uil-check-circle';

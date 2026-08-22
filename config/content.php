@@ -53,6 +53,26 @@ function default_settings(): array
         'course_page_title' => 'Course',
         'course_page_subtitle' => 'Pilih kelas, masukkan token akses, lalu mulai belajar.',
         'course_access_label' => 'Masukkan kode akses kelas',
+        'tech_stack_heading' => 'Tech Stack & Technologies',
+        'tech_stack_subtitle' => 'Kumpulan teknologi, bahasa pemrograman, framework, dan tools modern yang saya gunakan dalam membangun solusi digital inovatif.',
+    ];
+}
+
+function default_tech_stacks(): array
+{
+    return [
+        ['id' => 1, 'name' => 'PHP', 'category' => 'Backend', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', 'sort_order' => 1, 'is_active' => 1],
+        ['id' => 2, 'name' => 'JavaScript', 'category' => 'Frontend / Script', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', 'sort_order' => 2, 'is_active' => 1],
+        ['id' => 3, 'name' => 'Laravel', 'category' => 'PHP Framework', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg', 'sort_order' => 3, 'is_active' => 1],
+        ['id' => 4, 'name' => 'React', 'category' => 'Frontend Library', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', 'sort_order' => 4, 'is_active' => 1],
+        ['id' => 5, 'name' => 'MySQL', 'category' => 'Database', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', 'sort_order' => 5, 'is_active' => 1],
+        ['id' => 6, 'name' => 'Python', 'category' => 'Language / AI', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', 'sort_order' => 6, 'is_active' => 1],
+        ['id' => 7, 'name' => 'Node.js', 'category' => 'Runtime', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg', 'sort_order' => 7, 'is_active' => 1],
+        ['id' => 8, 'name' => 'Tailwind CSS', 'category' => 'Modern CSS', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg', 'sort_order' => 8, 'is_active' => 1],
+        ['id' => 9, 'name' => 'Bootstrap', 'category' => 'CSS Framework', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg', 'sort_order' => 9, 'is_active' => 1],
+        ['id' => 10, 'name' => 'Git & GitHub', 'category' => 'Version Control', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg', 'sort_order' => 10, 'is_active' => 1],
+        ['id' => 11, 'name' => 'Docker', 'category' => 'DevOps', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg', 'sort_order' => 11, 'is_active' => 1],
+        ['id' => 12, 'name' => 'Figma', 'category' => 'UI/UX Design', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg', 'sort_order' => 12, 'is_active' => 1],
     ];
 }
 
@@ -218,6 +238,56 @@ function get_resume_items(?PDO $pdo = null, ?string $type = null, bool $activeOn
 
             return !$activeOnly || (int) $item['is_active'] === 1;
         }));
+    }
+}
+
+function get_tech_stacks(?PDO $pdo = null, bool $activeOnly = true): array
+{
+    $pdo = $pdo ?: pdo(true);
+
+    if (!$pdo) {
+        $items = default_tech_stacks();
+        return $activeOnly ? array_values(array_filter($items, fn(array $i): bool => (int) $i['is_active'] === 1)) : $items;
+    }
+
+    try {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS tech_stacks (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            category VARCHAR(50) DEFAULT "Tech",
+            logo_path VARCHAR(255) NOT NULL,
+            sort_order INT DEFAULT 0,
+            is_active TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            KEY idx_sort_order (sort_order),
+            KEY idx_is_active (is_active)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM tech_stacks')->fetchColumn();
+        if ($count === 0) {
+            $stmt = $pdo->prepare('INSERT INTO tech_stacks (name, category, logo_path, sort_order, is_active) VALUES (?, ?, ?, ?, ?)');
+            foreach (default_tech_stacks() as $item) {
+                $stmt->execute([
+                    $item['name'],
+                    $item['category'] ?? 'Tech',
+                    $item['logo_path'],
+                    (int) $item['sort_order'],
+                    (int) $item['is_active'],
+                ]);
+            }
+        }
+
+        $sql = 'SELECT * FROM tech_stacks';
+        if ($activeOnly) {
+            $sql .= ' WHERE is_active = 1';
+        }
+        $sql .= ' ORDER BY sort_order ASC, id ASC';
+
+        return $pdo->query($sql)->fetchAll();
+    } catch (Throwable $exception) {
+        $items = default_tech_stacks();
+        return $activeOnly ? array_values(array_filter($items, fn(array $i): bool => (int) $i['is_active'] === 1)) : $items;
     }
 }
 

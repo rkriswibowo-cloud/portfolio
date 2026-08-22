@@ -202,3 +202,41 @@ function upload_course_image(array $file): ?string
 {
     return upload_admin_image($file, 'images/course', 'course');
 }
+
+function upload_tech_stack_logo(array $file): ?string
+{
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Upload logo tech stack gagal.');
+    }
+
+    if (($file['size'] ?? 0) > 2 * 1024 * 1024) {
+        throw new RuntimeException('Ukuran logo maksimal 2 MB.');
+    }
+
+    $extension = strtolower(pathinfo((string) ($file['name'] ?? ''), PATHINFO_EXTENSION));
+    $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+
+    if (!in_array($extension, $allowedExtensions, true)) {
+        throw new RuntimeException('Format logo harus JPG, PNG, GIF, WEBP, atau SVG.');
+    }
+
+    $folder = 'images/tech_stack';
+    $targetDirectory = __DIR__ . '/../' . $folder;
+
+    if (!is_dir($targetDirectory) && !mkdir($targetDirectory, 0775, true)) {
+        throw new RuntimeException('Folder upload tech stack belum bisa dibuat.');
+    }
+
+    $fileName = 'tech-' . date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '.' . $extension;
+    $targetPath = $targetDirectory . '/' . $fileName;
+
+    if (!move_uploaded_file((string) $file['tmp_name'], $targetPath)) {
+        throw new RuntimeException('Logo belum bisa disimpan.');
+    }
+
+    return $folder . '/' . $fileName;
+}

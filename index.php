@@ -10,6 +10,7 @@ $settings = get_settings($pdo);
 $projects = get_projects($pdo, true);
 $experiences = get_resume_items($pdo, 'experience', true);
 $educations = get_resume_items($pdo, 'education', true);
+$techStacks = get_tech_stacks($pdo, true);
 $contactStatus = null;
 $contactMessage = '';
 
@@ -240,6 +241,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_type'] ?? '') === 'co
             </div>
         </div>
     </section>
+
+    <!-- Tech Stack Infinite Marquee Slider -->
+    <?php if (!empty($techStacks)): ?>
+    <section class="tech-stack-section" id="tech-stack">
+        <div class="container text-center mb-4">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 col-12">
+                    <small class="small-text text-uppercase font-weight-bold" style="letter-spacing: 2px; color: #ffc200;">Technologies & Tools</small>
+                    <h2 class="mb-3"><?= e($settings['tech_stack_heading'] ?? 'Tech Stack & Technologies') ?></h2>
+                    <p class="text-muted mb-0"><?= e($settings['tech_stack_subtitle'] ?? 'Kumpulan teknologi, bahasa pemrograman, framework, dan tools modern yang saya gunakan dalam membangun solusi digital inovatif.') ?></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-marquee-wrapper">
+            <div class="tech-marquee-track">
+                <!-- Track 1 (Original items) -->
+                <?php foreach ($techStacks as $tech): ?>
+                    <?php
+                      $logoSrc = str_starts_with($tech['logo_path'], 'http://') || str_starts_with($tech['logo_path'], 'https://')
+                          ? $tech['logo_path']
+                          : ltrim($tech['logo_path'], '/');
+                    ?>
+                    <div class="tech-card" title="<?= e($tech['name']) ?> (<?= e($tech['category'] ?? 'Tech') ?>)">
+                        <div class="tech-card-logo">
+                            <img src="<?= e($logoSrc) ?>" alt="<?= e($tech['name']) ?>" loading="lazy">
+                        </div>
+                        <div class="tech-card-info">
+                            <h6 class="tech-card-name"><?= e($tech['name']) ?></h6>
+                            <?php if (!empty($tech['category'])): ?>
+                                <span class="tech-card-category"><?= e($tech['category']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+                <!-- Track 2 (Duplicate for smooth infinite continuous loop) -->
+                <?php foreach ($techStacks as $tech): ?>
+                    <?php
+                      $logoSrc = str_starts_with($tech['logo_path'], 'http://') || str_starts_with($tech['logo_path'], 'https://')
+                          ? $tech['logo_path']
+                          : ltrim($tech['logo_path'], '/');
+                    ?>
+                    <div class="tech-card" aria-hidden="true">
+                        <div class="tech-card-logo">
+                            <img src="<?= e($logoSrc) ?>" alt="<?= e($tech['name']) ?>" loading="lazy">
+                        </div>
+                        <div class="tech-card-info">
+                            <h6 class="tech-card-name"><?= e($tech['name']) ?></h6>
+                            <?php if (!empty($tech['category'])): ?>
+                                <span class="tech-card-category"><?= e($tech['category']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <section class="contact py-5" id="contact">
       <div class="container">
