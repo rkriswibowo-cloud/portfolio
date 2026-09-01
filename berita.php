@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/config/content.php';
+require_once __DIR__ . '/config/lang.php';
 
 start_app_session();
 
@@ -24,7 +25,7 @@ function news_date(?string $value): string
 }
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= e(current_lang()) ?>">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -38,7 +39,7 @@ function news_date(?string $value): string
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260514-course-dropdown">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20260901-bilingual">
   </head>
   <body>
 
@@ -47,6 +48,10 @@ function news_date(?string $value): string
             <a class="navbar-brand" href="index.php"><i class="uil uil-user"></i> <?= e($settings['site_brand'] ?? 'Marvel') ?></a>
 
             <div class="navbar-mobile-actions">
+                <div class="mobile-lang-switch">
+                    <a href="<?= e(lang_url('id')) ?>" class="mobile-lang-btn <?= current_lang() === 'id' ? 'active' : '' ?>">ID</a>
+                    <a href="<?= e(lang_url('en')) ?>" class="mobile-lang-btn <?= current_lang() === 'en' ? 'active' : '' ?>">EN</a>
+                </div>
                 <button class="mobile-color-mode color-mode-toggle" type="button" aria-label="Ganti dark mode" aria-pressed="false" title="Ganti dark mode">
                     <i class="color-mode-icon"></i>
                 </button>
@@ -61,40 +66,54 @@ function news_date(?string $value): string
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a href="index.php#about" class="nav-link"><span data-hover="About">About</span></a>
+                        <a href="index.php#about" class="nav-link"><span data-hover="<?= e(__t('nav_about')) ?>"><?= e(__t('nav_about')) ?></span></a>
                     </li>
                     <li class="nav-item">
-                        <a href="index.php#project" class="nav-link"><span data-hover="Projects">Projects</span></a>
+                        <a href="index.php#project" class="nav-link"><span data-hover="<?= e(__t('nav_projects')) ?>"><?= e(__t('nav_projects')) ?></span></a>
                     </li>
                     <li class="nav-item">
-                        <a href="index.php#resume" class="nav-link"><span data-hover="Resume">Resume</span></a>
+                        <a href="index.php#resume" class="nav-link"><span data-hover="<?= e(__t('nav_resume')) ?>"><?= e(__t('nav_resume')) ?></span></a>
                     </li>
                     <li class="nav-item">
-                        <a href="index.php#contact" class="nav-link"><span data-hover="Contact">Contact</span></a>
+                        <a href="index.php#academic" class="nav-link"><span data-hover="<?= e(__t('nav_publications')) ?>"><?= e(__t('nav_publications')) ?></span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="index.php#contact" class="nav-link"><span data-hover="<?= e(__t('nav_contact')) ?>"><?= e(__t('nav_contact')) ?></span></a>
                     </li>
                     <li class="nav-item active">
-                        <a href="berita.php" class="nav-link"><span data-hover="News">News</span></a>
+                        <a href="berita.php" class="nav-link"><span data-hover="<?= e(__t('nav_news')) ?>"><?= e(__t('nav_news')) ?></span></a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="courseDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span data-hover="Course">Course</span></a>
+                        <a href="#" class="nav-link dropdown-toggle" id="courseDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span data-hover="<?= e(__t('nav_course')) ?>"><?= e(__t('nav_course')) ?></span></a>
                         <div class="dropdown-menu navbar-course-dropdown" aria-labelledby="courseDropdown">
-                            <a class="dropdown-item" href="course.php"><i class="uil uil-book-open"></i> Free</a>
-                            <a class="dropdown-item" href="https://lms.rksolusindo.com" target="_blank" rel="noopener noreferrer"><i class="uil uil-star"></i> Premium</a>
-                            <a class="dropdown-item" href="cv-generator.php"><i class="uil uil-file-alt"></i> CV Generator</a>
+                            <a class="dropdown-item" href="course.php"><i class="uil uil-book-open"></i> <?= e(__t('nav_free')) ?></a>
+                            <a class="dropdown-item" href="https://lms.rksolusindo.com" target="_blank" rel="noopener noreferrer"><i class="uil uil-star"></i> <?= e(__t('nav_premium')) ?></a>
+                            <a class="dropdown-item" href="cv-generator.php"><i class="uil uil-file-alt"></i> <?= e(__t('nav_cv_generator')) ?></a>
                         </div>
                     </li>
                     <?php if (user_logged_in()): ?>
                     <li class="nav-item">
-                        <a href="my_courses.php" class="nav-link"><span data-hover="My Courses">My Courses</span></a>
+                        <a href="my_courses.php" class="nav-link"><span data-hover="<?= e(__t('nav_my_courses')) ?>"><?= e(__t('nav_my_courses')) ?></span></a>
                     </li>
                     <?php endif; ?>
                 </ul>
 
-                <ul class="navbar-nav ml-lg-auto">
-                    <li class="ml-lg-4">
+                <ul class="navbar-nav ml-lg-auto align-items-center flex-row">
+                    <li class="mr-2">
+                      <div class="lang-switch-wrap">
+                        <a href="<?= e(lang_url('id')) ?>" class="lang-btn <?= current_lang() === 'id' ? 'active' : '' ?>" title="Bahasa Indonesia">
+                          <span>🇮🇩 ID</span>
+                        </a>
+                        <span class="lang-separator">/</span>
+                        <a href="<?= e(lang_url('en')) ?>" class="lang-btn <?= current_lang() === 'en' ? 'active' : '' ?>" title="English">
+                          <span>🇬🇧 EN</span>
+                        </a>
+                      </div>
+                    </li>
+                    <li>
                       <div class="color-mode color-mode-toggle d-lg-flex justify-content-center align-items-center" role="button" tabindex="0" aria-label="Ganti dark mode" aria-pressed="false">
                         <i class="color-mode-icon"></i>
-                        Color mode
+                        <?= e(__t('nav_color_mode')) ?>
                       </div>
                     </li>
                 </ul>
@@ -185,7 +204,7 @@ function news_date(?string $value): string
                         </div>
                         <h2><a href="berita.php?slug=<?= e($post['slug']) ?>"><?= e($post['title']) ?></a></h2>
                         <?php if (!empty($post['excerpt'])): ?><p><?= e($post['excerpt']) ?></p><?php endif; ?>
-                        <a class="news-read-more" href="berita.php?slug=<?= e($post['slug']) ?>">Baca selengkapnya <i class="uil uil-arrow-right"></i></a>
+                        <a class="news-read-more" href="berita.php?slug=<?= e($post['slug']) ?>"><?= e(__t('news_read_more')) ?> <i class="uil uil-arrow-right"></i></a>
                       </div>
                     </article>
                   </div>
@@ -201,8 +220,7 @@ function news_date(?string $value): string
       <div class="container">
         <div class="row">
           <div class="col-lg-12 col-12">
-            <p class="copyright-text text-center">Copyright &copy; <?= date('Y') ?> <?= e($settings['footer_company'] ?? 'Company Name') ?>. All rights reserved</p>
-            
+            <p class="copyright-text text-center">Copyright &copy; <?= date('Y') ?> <?= e($settings['footer_company'] ?? 'Marvel') ?>. <?= e(__t('footer_rights')) ?></p>
           </div>
         </div>
       </div>

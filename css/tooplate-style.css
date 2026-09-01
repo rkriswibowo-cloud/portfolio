@@ -383,6 +383,122 @@ b, strong {
   color: #ffffff;
 }
 
+/* =========================================================
+   LANGUAGE SWITCHER (DESKTOP & MOBILE)
+   ========================================================= */
+.lang-switch-wrap {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 30px;
+  padding: 3px 6px;
+  margin-right: 14px;
+  gap: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  color: #64748b;
+  text-decoration: none !important;
+  transition: all 0.2s ease;
+  line-height: 1.2;
+}
+
+.lang-btn:hover {
+  color: #1e293b;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.lang-btn.active {
+  background: #ffc200;
+  color: #111111 !important;
+  box-shadow: 0 2px 6px rgba(255, 194, 0, 0.35);
+}
+
+.lang-separator {
+  color: #cbd5e1;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mobile-lang-switch {
+  display: none;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 2px 4px;
+  margin-right: 8px;
+  gap: 2px;
+}
+
+.mobile-lang-btn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 6px;
+  border-radius: 12px;
+  color: #64748b;
+  text-decoration: none !important;
+  line-height: 1;
+}
+
+.mobile-lang-btn.active {
+  background: #ffc200;
+  color: #111111 !important;
+}
+
+@media (max-width: 767px) {
+  .mobile-lang-switch {
+    display: inline-flex;
+  }
+}
+
+/* Dark Mode Overrides for Language Switcher */
+body.dark-mode .lang-switch-wrap {
+  background: #17171a;
+  border-color: #303038;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .lang-btn {
+  color: #94a3b8;
+}
+
+body.dark-mode .lang-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark-mode .lang-btn.active {
+  background: #ffc200;
+  color: #111111 !important;
+}
+
+body.dark-mode .lang-separator {
+  color: #475569;
+}
+
+body.dark-mode .mobile-lang-switch {
+  background: #17171a;
+  border-color: #303038;
+}
+
+body.dark-mode .mobile-lang-btn {
+  color: #94a3b8;
+}
+
+body.dark-mode .mobile-lang-btn.active {
+  background: #ffc200;
+  color: #111111 !important;
+}
+
 html.dark-mode,
 body.dark-mode,
 .dark-mode {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 date_default_timezone_set('Asia/Jakarta');
 
 require_once __DIR__ . '/config/content.php';
+require_once __DIR__ . '/config/lang.php';
 
 start_app_session();
 require_user_login('user_login.php');
@@ -175,7 +176,7 @@ if ($pdo) {
 }
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="<?= e(current_lang()) ?>">
 
 <head>
     <meta charset="utf-8">
@@ -187,7 +188,7 @@ if ($pdo) {
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260901-darkmode-tables">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20260901-bilingual">
 </head>
 
 <body>
@@ -200,6 +201,10 @@ if ($pdo) {
             </a>
 
             <div class="navbar-mobile-actions">
+                <div class="mobile-lang-switch">
+                    <a href="<?= e(lang_url('id')) ?>" class="mobile-lang-btn <?= current_lang() === 'id' ? 'active' : '' ?>">ID</a>
+                    <a href="<?= e(lang_url('en')) ?>" class="mobile-lang-btn <?= current_lang() === 'en' ? 'active' : '' ?>">EN</a>
+                </div>
                 <button class="mobile-color-mode color-mode-toggle" type="button" aria-label="Ganti dark mode" aria-pressed="false" title="Ganti dark mode">
                     <i class="color-mode-icon"></i>
                 </button>
@@ -220,36 +225,47 @@ if ($pdo) {
 
                     <li class="nav-item">
                         <a href="berita.php" class="nav-link">
-                            <span data-hover="News">News</span>
+                            <span data-hover="<?= e(__t('nav_news')) ?>"><?= e(__t('nav_news')) ?></span>
                         </a>
                     </li>
 
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" id="courseDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span data-hover="Course">Course</span></a>
+                        <a href="#" class="nav-link dropdown-toggle" id="courseDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span data-hover="<?= e(__t('nav_course')) ?>"><?= e(__t('nav_course')) ?></span></a>
                         <div class="dropdown-menu navbar-course-dropdown" aria-labelledby="courseDropdown">
-                            <a class="dropdown-item" href="course.php"><i class="uil uil-book-open"></i> Free</a>
-                            <a class="dropdown-item" href="https://lms.rksolusindo.com" target="_blank" rel="noopener noreferrer"><i class="uil uil-star"></i> Premium</a>
-                            <a class="dropdown-item" href="cv-generator.php"><i class="uil uil-file-alt"></i> CV Generator</a>
+                            <a class="dropdown-item" href="course.php"><i class="uil uil-book-open"></i> <?= e(__t('nav_free')) ?></a>
+                            <a class="dropdown-item" href="https://lms.rksolusindo.com" target="_blank" rel="noopener noreferrer"><i class="uil uil-star"></i> <?= e(__t('nav_premium')) ?></a>
+                            <a class="dropdown-item" href="cv-generator.php"><i class="uil uil-file-alt"></i> <?= e(__t('nav_cv_generator')) ?></a>
                         </div>
                     </li>
 
                     <li class="nav-item active">
                         <a href="my_courses.php" class="nav-link">
-                            <span data-hover="My Courses">My Courses</span>
+                            <span data-hover="<?= e(__t('nav_my_courses')) ?>"><?= e(__t('nav_my_courses')) ?></span>
                         </a>
                     </li>
                 </ul>
 
-                <ul class="navbar-nav ml-lg-auto align-items-center">
-                    <li class="nav-item">
+                <ul class="navbar-nav ml-lg-auto align-items-center flex-row">
+                    <li class="mr-2">
+                      <div class="lang-switch-wrap">
+                        <a href="<?= e(lang_url('id')) ?>" class="lang-btn <?= current_lang() === 'id' ? 'active' : '' ?>" title="Bahasa Indonesia">
+                          <span>🇮🇩 ID</span>
+                        </a>
+                        <span class="lang-separator">/</span>
+                        <a href="<?= e(lang_url('en')) ?>" class="lang-btn <?= current_lang() === 'en' ? 'active' : '' ?>" title="English">
+                          <span>🇬🇧 EN</span>
+                        </a>
+                      </div>
+                    </li>
+                    <li class="nav-item mr-2">
                         <a href="user_logout.php" class="nav-link text-danger font-weight-bold">
-                            <span data-hover="Logout">Logout</span>
+                            <span data-hover="<?= e(__t('nav_logout')) ?>"><?= e(__t('nav_logout')) ?></span>
                         </a>
                     </li>
-                    <li class="ml-lg-3">
+                    <li>
                         <div class="color-mode color-mode-toggle d-lg-flex justify-content-center align-items-center" role="button" tabindex="0" aria-label="Ganti dark mode" aria-pressed="false">
                             <i class="color-mode-icon"></i>
-                            Color mode
+                            <?= e(__t('nav_color_mode')) ?>
                         </div>
                     </li>
                 </ul>
