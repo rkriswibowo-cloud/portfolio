@@ -243,6 +243,12 @@ if ($pdo) {
                             <span data-hover="<?= e(__t('nav_my_courses')) ?>"><?= e(__t('nav_my_courses')) ?></span>
                         </a>
                     </li>
+
+                    <li class="nav-item">
+                        <a href="user_logout.php" class="nav-link text-danger font-weight-bold">
+                            <span data-hover="<?= e(__t('nav_logout')) ?>"><?= e(__t('nav_logout')) ?></span>
+                        </a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav ml-lg-auto align-items-center flex-row">
@@ -256,11 +262,6 @@ if ($pdo) {
                           <span>🇬🇧 EN</span>
                         </a>
                       </div>
-                    </li>
-                    <li class="nav-item mr-2">
-                        <a href="user_logout.php" class="nav-link text-danger font-weight-bold">
-                            <span data-hover="<?= e(__t('nav_logout')) ?>"><?= e(__t('nav_logout')) ?></span>
-                        </a>
                     </li>
                     <li>
                         <div class="color-mode color-mode-toggle d-lg-flex justify-content-center align-items-center" role="button" tabindex="0" aria-label="Ganti dark mode" aria-pressed="false">

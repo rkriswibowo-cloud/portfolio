@@ -182,6 +182,13 @@ $userEmail = current_user_email();
                     <li class="nav-item">
                         <a href="my_courses.php" class="nav-link"><span data-hover="<?= e(__t('nav_my_courses')) ?>"><?= e(__t('nav_my_courses')) ?></span></a>
                     </li>
+                    <li class="nav-item">
+                        <a href="user_logout.php" class="nav-link text-danger font-weight-bold"><span data-hover="<?= e(__t('nav_logout')) ?>"><?= e(__t('nav_logout')) ?></span></a>
+                    </li>
+                    <?php else: ?>
+                    <li class="nav-item">
+                        <a href="user_login.php" class="nav-link font-weight-bold"><span data-hover="<?= e(__t('nav_login')) ?>"><?= e(__t('nav_login')) ?></span></a>
+                    </li>
                     <?php endif; ?>
                 </ul>
 
@@ -197,15 +204,6 @@ $userEmail = current_user_email();
                         </a>
                       </div>
                     </li>
-                    <?php if ($isLoggedIn): ?>
-                    <li class="nav-item mr-2">
-                        <a href="user_logout.php" class="nav-link text-danger font-weight-bold"><span data-hover="<?= e(__t('nav_logout')) ?>"><?= e(__t('nav_logout')) ?></span></a>
-                    </li>
-                    <?php else: ?>
-                    <li class="nav-item mr-2">
-                        <a href="user_login.php" class="nav-link"><span data-hover="<?= e(__t('nav_login')) ?>"><?= e(__t('nav_login')) ?></span></a>
-                    </li>
-                    <?php endif; ?>
                     <li>
                       <div class="color-mode color-mode-toggle d-lg-flex justify-content-center align-items-center" role="button" tabindex="0" aria-label="Ganti dark mode" aria-pressed="false">
                         <i class="color-mode-icon"></i>
