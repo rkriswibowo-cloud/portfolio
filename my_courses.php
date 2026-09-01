@@ -187,7 +187,7 @@ if ($pdo) {
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260823-history">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20260901-darkmode-tables">
 </head>
 
 <body>
@@ -322,10 +322,10 @@ if ($pdo) {
                 </div>
 
                 <?php if (!$activeCourses): ?>
-                    <div class="text-center py-5 bg-light rounded" style="border: 1px dashed #cbd5e1;">
+                    <div class="course-empty-box text-center py-5 rounded">
                         <i class="uil uil-folder-open text-muted" style="font-size: 48px;"></i>
                         <h3 class="mt-3">Belum ada kelas aktif</h3>
-                        <p class="text-muted">
+                        <p class="text-muted mb-0">
                             Gunakan token enrollment di atas untuk menambahkan kelas ke akun Anda.
                         </p>
                     </div>
@@ -410,7 +410,7 @@ if ($pdo) {
                 <div class="row">
                     <!-- Kartu Riwayat CV Generator -->
                     <div class="col-12 mb-4">
-                        <div class="card border-0 shadow-sm rounded-lg p-4" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
+                        <div class="history-activity-card p-4">
                             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                                 <div class="d-flex align-items-center">
                                     <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mr-3" style="width: 44px; height: 44px; font-size: 20px;">
@@ -429,11 +429,11 @@ if ($pdo) {
                             </div>
 
                             <?php if ($savedCv): ?>
-                                <div class="p-3 bg-light rounded d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="history-cv-box p-3 rounded d-flex justify-content-between align-items-center flex-wrap gap-2">
                                     <div>
-                                        <strong class="text-dark font-weight-bold"><i class="uil uil-check-circle text-success mr-1"></i> <?= e($savedCv['title'] ?? 'CV Utama') ?></strong>
+                                        <strong class="history-item-title font-weight-bold"><i class="uil uil-check-circle text-success mr-1"></i> <?= e($savedCv['title'] ?? 'CV Utama') ?></strong>
                                         <span class="badge badge-success px-2 py-1 ml-2">Tersimpan di Cloud</span>
-                                        <div class="small text-muted mt-1">
+                                        <div class="small history-meta-text mt-1">
                                             Terakhir diperbarui: <?= e(format_course_datetime($savedCv['updated_at'] ?? '', 'd M Y, H:i')) ?> WIB
                                         </div>
                                     </div>
@@ -444,7 +444,7 @@ if ($pdo) {
                                     </div>
                                 </div>
                             <?php else: ?>
-                                <div class="p-3 bg-light rounded d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted small">
+                                <div class="history-cv-box p-3 rounded d-flex justify-content-between align-items-center flex-wrap gap-2 text-muted small">
                                     <div>
                                         <i class="uil uil-info-circle mr-1"></i> Belum ada CV yang tersimpan ke cloud. Anda dapat membuat dan menyimpan CV profesional secara gratis.
                                     </div>
@@ -460,7 +460,7 @@ if ($pdo) {
                 </div>
 
                 <!-- Tabel Riwayat Kelas yang Sudah Berakhir / Selesai -->
-                <div class="card border-0 shadow-sm rounded-lg p-4 mt-2" style="background: #ffffff; border: 1px solid #e2e8f0 !important;">
+                <div class="history-activity-card p-4 mt-2">
                     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <h4 class="mb-0 font-weight-bold">
                             <i class="uil uil-calendar-slash text-danger mr-1"></i> Riwayat Kelas Berakhir / Selesai
@@ -469,14 +469,14 @@ if ($pdo) {
                     </div>
 
                     <?php if (!$historyCourses): ?>
-                        <div class="py-4 text-center text-muted small bg-light rounded">
+                        <div class="history-empty-box py-4 text-center small rounded">
                             <i class="uil uil-check-circle text-success" style="font-size: 24px;"></i>
                             <div class="mt-1">Belum ada kelas yang masa aktifnya berakhir. Seluruh kelas Anda saat ini masih aktif.</div>
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="thead-light">
+                            <table class="table table-hover history-table mb-0">
+                                <thead>
                                     <tr>
                                         <th>Nama Kelas</th>
                                         <th>Waktu Enroll</th>
@@ -488,10 +488,10 @@ if ($pdo) {
                                     <?php foreach ($historyCourses as $hCourse): ?>
                                         <?php $hProgress = get_course_progress_summary(current_user_id(), (int) $hCourse['id'], $pdo); ?>
                                         <tr>
-                                            <td class="font-weight-bold text-dark">
+                                            <td class="history-course-title font-weight-bold">
                                                 <?= e($hCourse['title']) ?>
                                             </td>
-                                            <td class="small text-muted">
+                                            <td class="small history-meta-text">
                                                 <?= e(format_course_datetime($hCourse['enrolled_at'] ?? '', 'd M Y, H:i')) ?>
                                             </td>
                                             <td>
@@ -499,7 +499,7 @@ if ($pdo) {
                                                     <div class="progress flex-grow-1" style="height: 6px;">
                                                         <div class="progress-bar bg-success" style="width: <?= e((string) $hProgress['percent']) ?>%;"></div>
                                                     </div>
-                                                    <small class="font-weight-bold"><?= e((string) $hProgress['percent']) ?>%</small>
+                                                    <small class="font-weight-bold history-percent"><?= e((string) $hProgress['percent']) ?>%</small>
                                                 </div>
                                             </td>
                                             <td>
