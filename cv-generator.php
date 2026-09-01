@@ -170,7 +170,7 @@ $userEmail = current_user_email();
                         <div class="dropdown-menu navbar-course-dropdown" aria-labelledby="courseDropdown">
                             <a class="dropdown-item" href="course.php"><i class="uil uil-book-open"></i> Free</a>
                             <a class="dropdown-item" href="https://lms.rksolusindo.com" target="_blank" rel="noopener noreferrer"><i class="uil uil-star"></i> Premium</a>
-                            <a class="dropdown-item active" href="cv-generator.php"><i class="uil uil-file-alt"></i> CV Generator</a>
+                            <a class="dropdown-item" href="cv-generator.php"><i class="uil uil-file-alt"></i> CV Generator</a>
                         </div>
                     </li>
                     <?php if ($isLoggedIn): ?>

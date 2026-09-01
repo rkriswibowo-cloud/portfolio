@@ -55,6 +55,15 @@ function default_settings(): array
         'course_access_label' => 'Masukkan kode akses kelas',
         'tech_stack_heading' => 'Tech Stack & Technologies',
         'tech_stack_subtitle' => 'Kumpulan teknologi, bahasa pemrograman, framework, dan tools modern yang saya gunakan dalam membangun solusi digital inovatif.',
+        'academic_heading' => 'Publikasi & Riset',
+        'academic_subtitle' => 'Kumpulan publikasi jurnal internasional/nasional, riset terapan, program pengabdian masyarakat, HKI/paten, dan buku karya akademik.',
+        'academic_profile_title' => 'Academic & Research Profile',
+        'academic_profile_subtitle' => 'Profil Peneliti & Tautan Publikasi',
+        'academic_email' => 'author@univ.ac.id',
+        'academic_linkedin' => 'https://www.linkedin.com',
+        'academic_scholar' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+        'academic_scopus' => 'https://www.scopus.com',
+        'academic_sinta' => 'https://sinta.kemdikbud.go.id',
     ];
 }
 
@@ -64,15 +73,502 @@ function default_tech_stacks(): array
         ['id' => 1, 'name' => 'PHP', 'category' => 'Backend', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg', 'sort_order' => 1, 'is_active' => 1],
         ['id' => 2, 'name' => 'JavaScript', 'category' => 'Frontend / Script', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', 'sort_order' => 2, 'is_active' => 1],
         ['id' => 3, 'name' => 'Laravel', 'category' => 'PHP Framework', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg', 'sort_order' => 3, 'is_active' => 1],
-        ['id' => 4, 'name' => 'React', 'category' => 'Frontend Library', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', 'sort_order' => 4, 'is_active' => 1],
-        ['id' => 5, 'name' => 'MySQL', 'category' => 'Database', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', 'sort_order' => 5, 'is_active' => 1],
-        ['id' => 6, 'name' => 'Python', 'category' => 'Language / AI', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', 'sort_order' => 6, 'is_active' => 1],
-        ['id' => 7, 'name' => 'Node.js', 'category' => 'Runtime', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg', 'sort_order' => 7, 'is_active' => 1],
+        ['id' => 4, 'name' => 'MySQL', 'category' => 'Database', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', 'sort_order' => 4, 'is_active' => 1],
+        ['id' => 5, 'name' => 'Python', 'category' => 'Language / AI', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', 'sort_order' => 5, 'is_active' => 1],
+        ['id' => 6, 'name' => 'Node.js', 'category' => 'Runtime', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg', 'sort_order' => 6, 'is_active' => 1],
+        ['id' => 7, 'name' => 'HTML5 & CSS3', 'category' => 'Core Web', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg', 'sort_order' => 7, 'is_active' => 1],
         ['id' => 8, 'name' => 'Tailwind CSS', 'category' => 'Modern CSS', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg', 'sort_order' => 8, 'is_active' => 1],
         ['id' => 9, 'name' => 'Bootstrap', 'category' => 'CSS Framework', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg', 'sort_order' => 9, 'is_active' => 1],
         ['id' => 10, 'name' => 'Git & GitHub', 'category' => 'Version Control', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg', 'sort_order' => 10, 'is_active' => 1],
         ['id' => 11, 'name' => 'Docker', 'category' => 'DevOps', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg', 'sort_order' => 11, 'is_active' => 1],
         ['id' => 12, 'name' => 'Figma', 'category' => 'UI/UX Design', 'logo_path' => 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/figma/figma-original.svg', 'sort_order' => 12, 'is_active' => 1],
+    ];
+}
+
+function default_academic_records(): array
+{
+    return [
+        // --- 1. PUBLIKASI - PROSIDING INTERNASIONAL ---
+        [
+            'id' => 1,
+            'category' => 'publikasi',
+            'subcategory' => 'Prosiding Internasional',
+            'title' => 'Usability evaluation on the SIPR website uses the system usability scale and net promoter score',
+            'authors' => 'RS Pradini, R Kriswibowo, F Ramdani',
+            'journal_meta' => '(2019), 2019 International Conference on Sustainable Information Engineering and Technology (SIET), pp. 260-265',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:9yKSN-GCB0IC',
+            'year' => '2019',
+            'sort_order' => 1,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 2,
+            'category' => 'publikasi',
+            'subcategory' => 'Prosiding Internasional',
+            'title' => 'Evaluating Effective Social Media Marketing With Artificial Intelligence Using The AIDA Model Approach',
+            'authors' => 'RK Putri Ariatna Alia, Warna Agung Cahyono, Mohamad Shodikin, Jihan ...',
+            'journal_meta' => '(2024), International Journal of Computer and Information System (IJCIS) 5 (No 4), 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:IjCSPb-OGe4C',
+            'year' => '2024',
+            'sort_order' => 2,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 3,
+            'category' => 'publikasi',
+            'subcategory' => 'Prosiding Internasional',
+            'title' => 'The Impact of Website Interactivity on Users’ Speed in Finding Information: Evidence from Indonesia’s Top 5 Universities',
+            'authors' => 'RK Agung Teguh Setyadi, Mohammad Robihul Mufid, Putri Ariatna Alia, Agus ...',
+            'journal_meta' => '(2025), International Journal of Computer and Information System (IJCIS) 6 (3), pp. 230-239, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:qxL8FJ1GzNcC',
+            'year' => '2025',
+            'sort_order' => 3,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 4,
+            'category' => 'publikasi',
+            'subcategory' => 'Prosiding Internasional',
+            'title' => 'Analysis of Final Exam Essay Answer Accuracy: The Role of Artificial Intelligence in Automatic Assessment',
+            'authors' => 'PAA Rony Kriswibowo, Johan Suryo Prayogo, Rusina Widha Febriana, Agung Budi ...',
+            'journal_meta' => '(2024), International Journal of Computer and Information System (IJCIS) 5 (No 4), 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:5nxA0vEk-isC',
+            'year' => '2024',
+            'sort_order' => 4,
+            'is_active' => 1,
+        ],
+
+        // --- 2. PUBLIKASI - JURNAL INTERNASIONAL ---
+        [
+            'id' => 5,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Internasional',
+            'title' => 'Implementation open artificial intelligence ChatGPT integrated with WhatsApp bot',
+            'authors' => 'PA Alia, MT S ST, JS Prayogo, R Kriswibowo, S Kom, M Kom',
+            'journal_meta' => '(2024), Advance Sustainable Science, Engineering and Technology (ASSET) 6 (1), 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:IjCSPb-OGe4C',
+            'year' => '2024',
+            'sort_order' => 5,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 6,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Internasional',
+            'title' => 'Exploring the role of geospatial technology in disaster management of Batu City: Qualitative analysis using RQDA method',
+            'authors' => 'R Kriswibowo, F Ramdani, I Aknuranda',
+            'journal_meta' => '(2021), Journal of Information Technology and Computer Science 6 (1), pp. 80-95, 2021',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:d1gkVwhDpl0C',
+            'year' => '2021',
+            'sort_order' => 6,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 7,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Internasional',
+            'title' => 'Development of a Web-Based Mental Health Screening System Using a Large Language Model and Intervention Recommendations',
+            'authors' => 'R Kriswibowo, RW Febriana, AB Setyawan, S Ningrum, DP Atmaja',
+            'journal_meta' => '(2026), Jurnal JEETech 7 (1), pp. 26-41, 2026',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:L8Ckcad2t8MC',
+            'year' => '2026',
+            'sort_order' => 7,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 8,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Internasional',
+            'title' => 'Implementation chatbot on WhatsApp using artificial intelligence with natural language processing method',
+            'authors' => 'PA Alia, RW Febriana, JS Prayogo, R Kriswibowo',
+            'journal_meta' => '(2024), ELECTRON Jurnal Ilmiah Teknik Elektro 5 (1), pp. 8-14, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:Y0pCki6q_DkC',
+            'year' => '2024',
+            'sort_order' => 8,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 9,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Internasional',
+            'title' => 'Implementation of text processing techniques on citizen opinions regarding floods in Surabaya',
+            'authors' => 'PA Alia, JS Prayogo, RW Febriana, R Kriswibowo',
+            'journal_meta' => '(2024), ELECTRON Jurnal Ilmiah Teknik Elektro 5 (1), pp. 30-36, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:2osOgNQ5qMEC',
+            'year' => '2024',
+            'sort_order' => 9,
+            'is_active' => 1,
+        ],
+
+        // --- 3. PUBLIKASI - JURNAL NASIONAL ---
+        [
+            'id' => 10,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Tingkat Kebergunaan Aplikasi Pedulilindungi Mobile Menggunakan Metode Sistem Usability Scale dan Net Promoter Score',
+            'authors' => 'R Kriswibowo, RW Febriana, JS Prayogo',
+            'journal_meta' => '(2023), Decode: Jurnal Pendidikan Teknologi Informasi 3 (1), pp. 54-62, 2023',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:2osOgNQ5qMEC',
+            'year' => '2023',
+            'sort_order' => 10,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 11,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Evaluasi Kualitas Website KPU Kabupaten Kediri Menggunakan Metode Webqual 4.0 dan Importance Performance Analysis (IPA)',
+            'authors' => 'R Kriswibowo, BF Supriyanto, MH Arief, JG Noke, HV Sari',
+            'journal_meta' => '(2021), IJEIS (Indonesian Journal of Electronics and Instrumentation Systems) 11 (1), 2021',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:u-x6o8ySG0sC',
+            'year' => '2021',
+            'sort_order' => 11,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 12,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Implementasi Black Box Testing dan Acceptance Testing Fitur SKKM pada Cybercampus.uam.ac.id Universitas Anwar Medika',
+            'authors' => 'R Kriswibowo, JS Prayogo, RW Febriana, PA Alia',
+            'journal_meta' => '(2023), Jurnal Informatika Universitas Pamulang 8 (4), pp. 561-567, 2023',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:_FxGoFyzp5QC',
+            'year' => '2023',
+            'sort_order' => 12,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 13,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Perancangan Ulang Desain UI/UX Website Universitas Dengan Metode Design Thinking',
+            'authors' => 'JS Prayogo, R Kriswibowo, PA Alia, RW Febriana, AB Setyawan',
+            'journal_meta' => '(2024), Journal of Information Systems Management and Digital Business 1 (4), pp. 407-416, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:eQOLeE2rZwMC',
+            'year' => '2024',
+            'sort_order' => 13,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 14,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Perancangan desain UI/UX kursus online berbasis mobile menggunakan metode design thinking',
+            'authors' => 'JS Prayogo, R Kriswibowo, RW Febriana, PA Alia, AB Setyawan',
+            'journal_meta' => '(2025), Journal of Information Systems Management and Digital Business 2 (2), pp. 167-181, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:hqOjcs7Dif8C',
+            'year' => '2025',
+            'sort_order' => 14,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 15,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Pengembangan Sistem Informasi Logbook PKL Berbasis Web dengan Fitur Real-Time Monitoring',
+            'authors' => 'R Kriswibowo, FK Suhada, MA Riskyansah',
+            'journal_meta' => '(2025), TEKNOFILE: Jurnal Sistem Informasi 3 (7), pp. 478-489, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:L8Ckcad2t8MC',
+            'year' => '2025',
+            'sort_order' => 15,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 16,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Pengaruh Fitur Dan Kemudahan Penggunaan Terhadap Kepuasan Pengguna Aplikasi Si Rekap KPU',
+            'authors' => 'R Kriswibowo, RW Febriana, JS Prayogo, PA Alia',
+            'journal_meta' => '(2024), Jurnal Ilmu Komputer Dan Teknologi Informasi (Neptunus) 3 (2), pp. 16-24, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:4TOpqqG69KYC',
+            'year' => '2024',
+            'sort_order' => 16,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 17,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Evaluasi Kematangan Teknologi Informasi Kesehatan: Penerapan Health Information Technology Maturity Model (HITMM)',
+            'authors' => 'R Kriswibowo, S Ningrum',
+            'journal_meta' => '(2025), RIGGS: Journal of Artificial Intelligence and Digital Business 4 (2), pp. 5655-5662, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:Zph67rFs4hoC',
+            'year' => '2025',
+            'sort_order' => 17,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 18,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Development of an Integrated Information System for Monitoring and Validation of Health Workers Practice Licenses (STR) in Healthcare Facilities',
+            'authors' => 'R Kriswibowo, AB Setyawan, RW Febriana',
+            'journal_meta' => '(2025), Jurnal Ilmiah Informatika dan Komputer 2 (1), pp. 48-58, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:YOwf2qJgpHMC',
+            'year' => '2025',
+            'sort_order' => 18,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 19,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Implementation of Mobile Academic Information System Web Services (Case Study UAM Cybercampus)',
+            'authors' => 'PA Alia, AT Setyadi, EY Kartiko, RW Febriana, R Kriswibowo, MF Falah',
+            'journal_meta' => '(2026), Jurnal Rekayasa Sistem Informasi dan Teknologi 3 (4), pp. 697-714, 2026',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:ZeXyd9-uunAC',
+            'year' => '2026',
+            'sort_order' => 19,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 20,
+            'category' => 'publikasi',
+            'subcategory' => 'Jurnal Nasional',
+            'title' => 'Decision Support System Diagnosis Penyakit Stroke Menggunakan Metode Composite Performance Index (CPI)',
+            'authors' => 'RW Febriana, R Kriswibowo, JS Prayogo, PA Alia, SB Pratama',
+            'journal_meta' => '(2025), Jurnal Ilmiah Informatika dan Ilmu Komputer (JIMA-ILKOM) 4 (2), pp. 111-121, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:aqlVkmm33-oC',
+            'year' => '2025',
+            'sort_order' => 20,
+            'is_active' => 1,
+        ],
+
+        // --- 4. RISET / PENELITIAN ---
+        [
+            'id' => 21,
+            'category' => 'riset',
+            'subcategory' => 'Penelitian',
+            'title' => 'Penerapan Artificial Intelligence (AI) dan Natural Language Processing (NLP) dalam Otomatisasi Penilaian Ujian Esai dan Layanan Chatbot Akademik',
+            'authors' => 'Rony Kriswibowo, Johan Suryo Prayogo, Rusina Widha Febriana, Putri Ariatna Alia',
+            'journal_meta' => 'Hibah Penelitian Dosen Pemula (PDP) / Penelitian Terapan UAM, 2024-2025',
+            'url' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+            'year' => '2025',
+            'sort_order' => 21,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 22,
+            'category' => 'riset',
+            'subcategory' => 'Penelitian',
+            'title' => 'Rancang Bangun Sistem Skrining Kesehatan Mental Berbasis Large Language Model (LLM) dengan Rekomendasi Intervensi Terpersonalisasi',
+            'authors' => 'Rony Kriswibowo, Rusina Widha Febriana, Agung Budi Setyawan, Siti Ningrum, Danuditya Purna Atmaja',
+            'journal_meta' => 'Riset Sistem Cerdas Kesehatan / AI in Health Informatics, 2025-2026',
+            'url' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+            'year' => '2026',
+            'sort_order' => 22,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 23,
+            'category' => 'riset',
+            'subcategory' => 'Penelitian',
+            'title' => 'Evaluasi Usability dan Interaktivitas Antarmuka Web Universitas Terhadap Efisiensi Pencarian Informasi Pengguna',
+            'authors' => 'Rony Kriswibowo, Agung Teguh Setyadi, Mohammad Robihul Mufid, Putri Ariatna Alia',
+            'journal_meta' => 'Penelitian Human-Computer Interaction (HCI) & User Experience, 2025',
+            'url' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+            'year' => '2025',
+            'sort_order' => 23,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 24,
+            'category' => 'riset',
+            'subcategory' => 'Penelitian',
+            'title' => 'Upaya Kepemimpinan Transformasional dalam Meningkatkan Motivasi Kerja Karyawan PT Secma Energy Cell Driyorejo',
+            'authors' => 'M Fathoni, EA Farida, R Kriswibowo, U Fadilah',
+            'journal_meta' => 'EKOMA: Jurnal Ekonomi, Manajemen, Akuntansi 3 (5), pp. 715-723, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:LkGwnXOMwfcC',
+            'year' => '2024',
+            'sort_order' => 24,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 25,
+            'category' => 'riset',
+            'subcategory' => 'Penelitian',
+            'title' => 'Sistem Informasi Layanan Kependudukan Pada Kelurahan Senden Kec. Kayenkidul Kab. Kediri',
+            'authors' => 'Rony Kriswibowo',
+            'journal_meta' => 'Studi Rancang Bangun Sistem Administrasi Publik & E-Government, 2016',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:u5HHmVD_uO8C',
+            'year' => '2016',
+            'sort_order' => 25,
+            'is_active' => 1,
+        ],
+
+        // --- 5. PENGABDIAN KEPADA MASYARAKAT (PKM) ---
+        [
+            'id' => 26,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Digitalisasi layanan kesehatan: Pelatihan IT untuk kader posyandu Desa Simogirang dalam pencatatan data kesehatan',
+            'authors' => 'R Kriswibowo, RW Febriana, JS Prayogo, P Purwanto, S Ningrum, ...',
+            'journal_meta' => '(2025), Dinamika Sosial: Jurnal Pengabdian Masyarakat dan Transformasi Kesejahteraan, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:ULOm3_A8WrAC',
+            'year' => '2025',
+            'sort_order' => 26,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 27,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Optimalisasi Branding Produk UMKM Ibu-ibu PKK Desa Simogirang melalui Pemanfaatan Media Sosial dan Teknologi Internet',
+            'authors' => 'R Kriswibowo, M Fathoni, RW Febriana, JS Prayogo, P Purwanto, ...',
+            'journal_meta' => '(2025), Transformasi Masyarakat: Jurnal Inovasi Sosial dan Pengabdian 2 (3), pp. 238-247, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:Zph67rFs4hoC',
+            'year' => '2025',
+            'sort_order' => 27,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 28,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Pengembangan Keterampilan Desain Interaktif Dan Serbaguna Dalam Era Society 5.0 Dengan Menggunakan Canva',
+            'authors' => 'PA Alia, JS Prayogo, R Kriswibowo, RW Febriana',
+            'journal_meta' => '(2024), Jurnal Pengabdian Kolaborasi Dan Inovasi Ipteks 2 (3), pp. 977-982, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:YsMSGLbcyi4C',
+            'year' => '2024',
+            'sort_order' => 28,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 29,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Pemanfaatan Artificial Intelligence (AI) di Era Digital untuk Gen Z pada SMKN 1 Cerme Gresik',
+            'authors' => 'RK Sayyidah Hajar Faiqotul Muhimmah, Lusi Fitria Yunani, Johan Suryo Prayogo ...',
+            'journal_meta' => '(2024), Indonesia Bergerak: Jurnal Hasil Kegiatan Pengabdian Masyarakat 3 (1), pp. 1-8, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:YsMSGLbcyi4C',
+            'year' => '2024',
+            'sort_order' => 29,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 30,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Peningkatan pemahaman dan keterampilan masyarakat kelurahan sedenganmijen tentang penggunaan aplikasi sipraja',
+            'authors' => 'R Kriswibowo, PA Alia, AT Setyadi, JS Prayogo, RW Febriana',
+            'journal_meta' => '(2023), Jurnal Pengabdian Kolaborasi Dan Inovasi IPTEKS 1 (6), pp. 823-830, 2023',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:YsMSGLbcyi4C',
+            'year' => '2023',
+            'sort_order' => 30,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 31,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Branding “KORAN (Kopi Durian)” di Desa Wonosalam sebagai Pengembangan Produk untuk Meningkatkan Daya Saing UMKM Berbasis Digital Marketing',
+            'authors' => 'AM Charisma, R Kriswibowo, EA Farida',
+            'journal_meta' => '(2023), Community Development Journal 4 (4), pp. 9143-9149, 2023',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:YsMSGLbcyi4C',
+            'year' => '2023',
+            'sort_order' => 31,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 32,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Adopsi dan Pemahaman Teknologi Smartwatch di Kalangan Masyarakat Desa Sembung, Wringinanom, Gresik',
+            'authors' => 'SBP Rony Kriswibowo, Johan Suryo Prayogo, Danuditya Purna Atmaja, Lusi ...',
+            'journal_meta' => '(2025), NUSANTARA Jurnal Pengabdian Kepada Masyarakat 5 (4), pp. 312–321, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:9ZlFYXVOiuMC',
+            'year' => '2025',
+            'sort_order' => 32,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 33,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Penyuluhan Membuka Mindset Warga Tentang Pentingnya Kegunaan Teknologi untuk Membantu Administrasi di Kelurahan Wedoroklurak, Sidoarjo',
+            'authors' => 'PA Alia, AT Setyadi, R Kriswibowo, JS Prayogo, RW Febriana, ...',
+            'journal_meta' => '(2024), Jurnal Pengabdian Kolaborasi dan Inovasi IPTEKS 2 (1), pp. 157-161, 2024',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:zYLM7Y9cAGgC',
+            'year' => '2024',
+            'sort_order' => 33,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 34,
+            'category' => 'pengabdian',
+            'subcategory' => 'Pengabdian Masyarakat',
+            'title' => 'Pengolahan Limbah Feses Sapi menjadi Kompos Blok (KOPIKO) Berbasis Zero waste yang Bernilai Ekonomis di Wonosalam Jombang',
+            'authors' => 'AM Charisma, EA Farida, R Kriswibowo, MR Gantari, CD Puspita',
+            'journal_meta' => '(2025), Jurnal Pengabdian kepada Masyarakat Nusantara 6 (4), pp. 6705-6714, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:QIV2ME_5wuYC',
+            'year' => '2025',
+            'sort_order' => 34,
+            'is_active' => 1,
+        ],
+
+        // --- 6. HKI / PATEN ---
+        [
+            'id' => 35,
+            'category' => 'hki',
+            'subcategory' => 'Hak Cipta',
+            'title' => 'Sistem Informasi Akademik Berbasis Web dan Mobile (UAM Cybercampus)',
+            'authors' => 'Rony Kriswibowo, Putri Ariatna Alia, Agung Teguh Setyadi, Johan Suryo Prayogo, Rusina Widha Febriana',
+            'journal_meta' => 'Hak Cipta Program Komputer / Surat Pencatatan Ciptaan DJKI Kemenkumham RI, 2024',
+            'url' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+            'year' => '2024',
+            'sort_order' => 35,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 36,
+            'category' => 'hki',
+            'subcategory' => 'Hak Cipta',
+            'title' => 'Aplikasi Skrining Kesehatan Mental Berbasis Large Language Model (LLM) Terintegrasi',
+            'authors' => 'Rony Kriswibowo, Rusina Widha Febriana, Agung Budi Setyawan, Siti Ningrum, Danuditya Purna Atmaja',
+            'journal_meta' => 'Hak Cipta Program Komputer / DJKI Kemenkumham RI, 2026',
+            'url' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+            'year' => '2026',
+            'sort_order' => 36,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 37,
+            'category' => 'hki',
+            'subcategory' => 'Hak Cipta',
+            'title' => 'Sistem Validasi dan Monitoring Surat Tanda Registrasi (STR) Tenaga Kesehatan Faskes',
+            'authors' => 'Rony Kriswibowo, Agung Budi Setyawan, Rusina Widha Febriana',
+            'journal_meta' => 'Hak Cipta Program Komputer / DJKI Kemenkumham RI, 2025',
+            'url' => 'https://scholar.google.com/citations?hl=id&user=D7hLtpQAAAAJ',
+            'year' => '2025',
+            'sort_order' => 37,
+            'is_active' => 1,
+        ],
+
+        // --- 7. BUKU ---
+        [
+            'id' => 38,
+            'category' => 'buku',
+            'subcategory' => 'Buku Referensi',
+            'title' => 'TEKNIK DASAR PEMBUATAN WEBSITE',
+            'authors' => 'PS Hasugian, Z Utami, IYR Pratiwi, JS Prayogo, RW Febriana, R Kriswibowo',
+            'journal_meta' => 'Penerbit Penamuda Media, Vol. 2 (2), viii + 199 hlm, ISBN / Ref: 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:Wp0gIr-vW9MC',
+            'year' => '2025',
+            'sort_order' => 38,
+            'is_active' => 1,
+        ],
+        [
+            'id' => 39,
+            'category' => 'buku',
+            'subcategory' => 'Buku Referensi',
+            'title' => 'Pemrosesan Citra (Image Processing)',
+            'authors' => 'N Rosmawarni, H Nurrahmi, SM Ladjamuddin, F Fauziah, RA Putri, R Kriswibowo',
+            'journal_meta' => 'Penerbit PT Penamuda Media, Cetakan I, 2025',
+            'url' => 'https://scholar.google.com/citations?view_op=view_citation&hl=id&user=D7hLtpQAAAAJ&pagesize=100&citation_for_view=D7hLtpQAAAAJ:kNdYIx-mwKoC',
+            'year' => '2025',
+            'sort_order' => 39,
+            'is_active' => 1,
+        ],
     ];
 }
 
@@ -288,6 +784,176 @@ function get_tech_stacks(?PDO $pdo = null, bool $activeOnly = true): array
     } catch (Throwable $exception) {
         $items = default_tech_stacks();
         return $activeOnly ? array_values(array_filter($items, fn(array $i): bool => (int) $i['is_active'] === 1)) : $items;
+    }
+}
+
+function ensure_academic_records_table(?PDO $pdo = null): void
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo) {
+        return;
+    }
+
+    try {
+        $pdo->exec('CREATE TABLE IF NOT EXISTS academic_records (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            category VARCHAR(50) NOT NULL,
+            subcategory VARCHAR(100) NULL,
+            title VARCHAR(500) NOT NULL,
+            authors TEXT NOT NULL,
+            journal_meta TEXT NULL,
+            url VARCHAR(500) NULL,
+            year VARCHAR(20) NULL,
+            sort_order INT DEFAULT 0,
+            is_active TINYINT(1) DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            KEY idx_category (category),
+            KEY idx_sort_order (sort_order),
+            KEY idx_is_active (is_active)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
+
+        $count = (int) $pdo->query('SELECT COUNT(*) FROM academic_records')->fetchColumn();
+        if ($count === 0) {
+            $stmt = $pdo->prepare('INSERT INTO academic_records (category, subcategory, title, authors, journal_meta, url, year, sort_order, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+            foreach (default_academic_records() as $item) {
+                $stmt->execute([
+                    $item['category'],
+                    $item['subcategory'] ?? null,
+                    $item['title'],
+                    $item['authors'],
+                    $item['journal_meta'] ?? null,
+                    $item['url'] ?? '',
+                    $item['year'] ?? null,
+                    (int) ($item['sort_order'] ?? 0),
+                    (int) ($item['is_active'] ?? 1),
+                ]);
+            }
+        }
+    } catch (Throwable $e) {
+        // Table creation or seed failed
+    }
+}
+
+function get_academic_records(?PDO $pdo = null, ?string $category = null, bool $activeOnly = true): array
+{
+    $pdo = $pdo ?: pdo(true);
+
+    if (!$pdo) {
+        $records = default_academic_records();
+        return array_values(array_filter($records, function (array $item) use ($category, $activeOnly): bool {
+            if ($category !== null && $category !== '' && $category !== 'all' && $item['category'] !== $category) {
+                return false;
+            }
+            return !$activeOnly || (int) ($item['is_active'] ?? 1) === 1;
+        }));
+    }
+
+    try {
+        ensure_academic_records_table($pdo);
+
+        $conditions = [];
+        $params = [];
+
+        if ($category !== null && $category !== '' && $category !== 'all') {
+            $conditions[] = 'category = ?';
+            $params[] = $category;
+        }
+
+        if ($activeOnly) {
+            $conditions[] = 'is_active = 1';
+        }
+
+        $sql = 'SELECT * FROM academic_records';
+        if ($conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+        $sql .= ' ORDER BY sort_order ASC, id ASC';
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return $stmt->fetchAll();
+    } catch (Throwable $exception) {
+        $records = default_academic_records();
+        return array_values(array_filter($records, function (array $item) use ($category, $activeOnly): bool {
+            if ($category !== null && $category !== '' && $category !== 'all' && $item['category'] !== $category) {
+                return false;
+            }
+            return !$activeOnly || (int) ($item['is_active'] ?? 1) === 1;
+        }));
+    }
+}
+
+function get_academic_record_by_id(int $id, ?PDO $pdo = null): ?array
+{
+    $pdo = $pdo ?: pdo(true);
+
+    if (!$pdo) {
+        foreach (default_academic_records() as $item) {
+            if ((int) $item['id'] === $id) {
+                return $item;
+            }
+        }
+        return null;
+    }
+
+    try {
+        ensure_academic_records_table($pdo);
+        $stmt = $pdo->prepare('SELECT * FROM academic_records WHERE id = ? LIMIT 1');
+        $stmt->execute([$id]);
+        $row = $stmt->fetch();
+        return $row ?: null;
+    } catch (Throwable $exception) {
+        return null;
+    }
+}
+
+function save_academic_record(array $data, ?PDO $pdo = null): int
+{
+    $pdo = $pdo ?: pdo();
+    ensure_academic_records_table($pdo);
+
+    $id = (int) ($data['id'] ?? 0);
+    $category = trim((string) ($data['category'] ?? 'publikasi'));
+    $subcategory = trim((string) ($data['subcategory'] ?? ''));
+    $title = trim((string) ($data['title'] ?? ''));
+    $authors = trim((string) ($data['authors'] ?? ''));
+    $journalMeta = trim((string) ($data['journal_meta'] ?? ''));
+    $url = trim((string) ($data['url'] ?? ''));
+    $year = trim((string) ($data['year'] ?? ''));
+    $sortOrder = (int) ($data['sort_order'] ?? 0);
+    $isActive = isset($data['is_active']) && $data['is_active'] ? 1 : 0;
+
+    if ($title === '') {
+        throw new InvalidArgumentException('Judul karya/riset/publikasi wajib diisi.');
+    }
+
+    if ($category === 'publikasi' && $subcategory === '') {
+        $subcategory = 'Jurnal Internasional';
+    }
+
+    if ($id > 0) {
+        $stmt = $pdo->prepare('UPDATE academic_records SET category = ?, subcategory = ?, title = ?, authors = ?, journal_meta = ?, url = ?, year = ?, sort_order = ?, is_active = ? WHERE id = ?');
+        $stmt->execute([$category, $subcategory, $title, $authors, $journalMeta, $url, $year, $sortOrder, $isActive, $id]);
+        return $id;
+    }
+
+    $stmt = $pdo->prepare('INSERT INTO academic_records (category, subcategory, title, authors, journal_meta, url, year, sort_order, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $stmt->execute([$category, $subcategory, $title, $authors, $journalMeta, $url, $year, $sortOrder, $isActive]);
+    return (int) $pdo->lastInsertId();
+}
+
+function delete_academic_record(int $id, ?PDO $pdo = null): bool
+{
+    $pdo = $pdo ?: pdo();
+    try {
+        ensure_academic_records_table($pdo);
+        $stmt = $pdo->prepare('DELETE FROM academic_records WHERE id = ?');
+        $stmt->execute([$id]);
+        return $stmt->rowCount() > 0;
+    } catch (Throwable $exception) {
+        return false;
     }
 }
 

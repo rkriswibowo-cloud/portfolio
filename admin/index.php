@@ -67,6 +67,7 @@ $stats = [
     'active_users' => (int) $pdo->query('SELECT COUNT(*) FROM users WHERE COALESCE(is_active, 1) = 1')->fetchColumn(),
     'inactive_users' => (int) $pdo->query('SELECT COUNT(*) FROM users WHERE COALESCE(is_active, 1) = 0')->fetchColumn(),
     'tech_stacks' => count(get_tech_stacks($pdo, false)),
+    'academic' => count(get_academic_records($pdo, null, false)),
 ];
 
 $monitoringTotal = count_admin_user_course_monitoring($pdo);
@@ -126,6 +127,13 @@ admin_header('Dashboard');
           <span><i class="uil uil-envelope"></i> Pesan Contact</span>
           <strong><?= e((string) $stats['messages']) ?></strong>
           <small>pesan masuk</small>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-4">
+        <div class="admin-card stat-card stat-card-modern">
+          <span><i class="uil uil-graduation-cap"></i> Publikasi & Riset</span>
+          <strong><?= e((string) $stats['academic']) ?></strong>
+          <small>karya & publikasi</small>
         </div>
       </div>
       <div class="col-sm-6 col-xl-4">

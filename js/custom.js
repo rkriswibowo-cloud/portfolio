@@ -55,20 +55,28 @@
 
     // SMOOTHSCROLL
     $(function() {
-      $('.nav-link, .custom-btn-link').on('click', function(event) {
+      $('.navbar-nav .nav-link, .custom-btn-link').not('[data-toggle="tab"]').on('click', function(event) {
         var href = $(this).attr('href');
 
-        if (!href || href.charAt(0) !== '#') {
+        if (!href || href.charAt(0) !== '#' || href === '#') {
           return;
         }
 
-        var $anchor = $(this);
-        $('html, body').stop().animate({
-            scrollTop: $($anchor.attr('href')).offset().top - 49
-        }, 1000);
-        event.preventDefault();
+        var targetEl = $(href);
+        if (targetEl.length) {
+          $('html, body').stop().animate({
+              scrollTop: targetEl.offset().top - 49
+          }, 1000);
+          event.preventDefault();
+        }
       });
     });  
+
+    // ACADEMIC TABS NO JUMP
+    $('.academic-nav-tabs .nav-link').on('click', function(event) {
+      event.preventDefault();
+      $(this).tab('show');
+    });
 
     // TOOLTIP
     $('.social-links a').tooltip();
