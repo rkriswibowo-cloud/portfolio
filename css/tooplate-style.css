@@ -454,9 +454,23 @@ b, strong {
   color: #111111 !important;
 }
 
-@media (max-width: 767px) {
+/* Sembunyikan desktop switcher di layar mobile/tablet agar tidak ganda di hamburger menu */
+@media (max-width: 991px) {
+  .lang-switch-wrap,
+  .desktop-lang-item {
+    display: none !important;
+  }
   .mobile-lang-switch {
-    display: inline-flex;
+    display: inline-flex !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .mobile-lang-switch {
+    display: none !important;
+  }
+  .lang-switch-wrap {
+    display: inline-flex !important;
   }
 }
 

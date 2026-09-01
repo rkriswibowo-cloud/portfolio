@@ -186,7 +186,7 @@ $userEmail = current_user_email();
                 </ul>
 
                 <ul class="navbar-nav ml-lg-auto align-items-center flex-row">
-                    <li class="mr-2">
+                    <li class="mr-2 d-none d-lg-block desktop-lang-item">
                       <div class="lang-switch-wrap">
                         <a href="<?= e(lang_url('id')) ?>" class="lang-btn <?= current_lang() === 'id' ? 'active' : '' ?>" title="Bahasa Indonesia">
                           <span>🇮🇩 ID</span>
