@@ -265,6 +265,30 @@ function lang_dictionary(): array
             'id' => 'Buka URL',
             'en' => 'Open Link',
         ],
+        'academic_open_drive_book' => [
+            'id' => 'Buka Buku (Google Drive)',
+            'en' => 'Open Book (Google Drive)',
+        ],
+        'academic_open_drive_patent' => [
+            'id' => 'Lihat Sertifikat HKI (Google Drive)',
+            'en' => 'View IPR Certificate (Google Drive)',
+        ],
+        'academic_open_drive_doc' => [
+            'id' => 'Buka Dokumen (Google Drive)',
+            'en' => 'Open Document (Google Drive)',
+        ],
+        'academic_open_external_book' => [
+            'id' => 'Buka Link / Penerbit',
+            'en' => 'Open Link / Publisher',
+        ],
+        'academic_open_external_patent' => [
+            'id' => 'Buka Link / Detail HKI',
+            'en' => 'Open Link / IPR Details',
+        ],
+        'academic_open_external_doc' => [
+            'id' => 'Buka Tautan Eksternal',
+            'en' => 'Open External Link',
+        ],
         'academic_no_data' => [
             'id' => 'Belum ada data pada kategori ini.',
             'en' => 'No records found in this category.',

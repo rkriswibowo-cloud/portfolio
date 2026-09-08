@@ -48,8 +48,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new RuntimeException('Judul karya/riset/publikasi wajib diisi.');
             }
 
-            if ($category === 'publikasi' && $subcategory === '') {
-                $subcategory = 'Jurnal Internasional';
+            if ($category === 'publikasi') {
+                if (!in_array($subcategory, ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'], true)) {
+                    $subcategory = 'Jurnal Internasional';
+                }
+            } elseif ($category === 'hki') {
+                if ($subcategory === '' || in_array($subcategory, ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'], true)) {
+                    $subcategory = 'Hak Cipta';
+                }
+            } elseif ($category === 'buku') {
+                if ($subcategory === '' || in_array($subcategory, ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'], true)) {
+                    $subcategory = 'Buku Referensi';
+                }
+            } elseif ($category === 'riset') {
+                $subcategory = 'Penelitian';
+            } elseif ($category === 'pengabdian') {
+                $subcategory = 'Pengabdian Masyarakat';
             }
 
             save_academic_record([
@@ -74,8 +88,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('academic.php?cat=' . urlencode($currentCat) . '&page=' . max(1, $currentPage));
 }
 
+// Auto-repair subcategories in database if any mismatched entries exist
+try {
+    if ($pdo) {
+        $pdo->exec("UPDATE academic_records SET subcategory = 'Hak Cipta' WHERE category = 'hki' AND (subcategory = 'Jurnal Internasional' OR subcategory = '' OR subcategory IS NULL)");
+        $pdo->exec("UPDATE academic_records SET subcategory = 'Buku Referensi' WHERE category = 'buku' AND (subcategory = 'Jurnal Internasional' OR subcategory = '' OR subcategory IS NULL)");
+        $pdo->exec("UPDATE academic_records SET subcategory = 'Penelitian' WHERE category = 'riset' AND (subcategory = 'Jurnal Internasional' OR subcategory = '' OR subcategory IS NULL)");
+        $pdo->exec("UPDATE academic_records SET subcategory = 'Pengabdian Masyarakat' WHERE category = 'pengabdian' AND (subcategory = 'Jurnal Internasional' OR subcategory = '' OR subcategory IS NULL)");
+    }
+} catch (Throwable $e) {
+    // ignore
+}
+
 $settings = get_settings($pdo);
 $allRecords = get_academic_records($pdo, null, false);
+
+// Subcategory configuration map
+$subcatMap = [
+    'publikasi' => ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'],
+    'hki' => ['Hak Cipta', 'Paten', 'Paten Sederhana', 'Desain Industri', 'Merek'],
+    'buku' => ['Buku Referensi', 'Buku Ajar', 'Monograf', 'Book Chapter'],
+];
 
 // Hitung total per kategori
 $counts = [
@@ -186,7 +219,7 @@ admin_header('Kelola Publikasi & Riset');
         <div class="row">
           <div class="form-group col-md-4">
             <label class="font-weight-bold">Kategori Data <span class="text-danger">*</span></label>
-            <select class="form-control" name="category" id="newItemCategory" onchange="handleCategoryChange(this.value, 'newSubcatWrap', 'newMetaLabel')">
+            <select class="form-control" name="category" id="newItemCategory" onchange="handleCategoryChange(this.value, 'newSubcatWrap', 'newSubcatSelect', 'newSubcatLabel', 'newMetaLabel', 'newUrlLabel', 'newUrlHint')">
               <option value="publikasi" <?= $initCat === 'publikasi' ? 'selected' : '' ?>>Publikasi</option>
               <option value="riset" <?= $initCat === 'riset' ? 'selected' : '' ?>>Riset</option>
               <option value="pengabdian" <?= $initCat === 'pengabdian' ? 'selected' : '' ?>>Pengabdian</option>
@@ -195,12 +228,22 @@ admin_header('Kelola Publikasi & Riset');
             </select>
           </div>
 
-          <div class="form-group col-md-4" id="newSubcatWrap" style="<?= $initCat !== 'all' && $initCat !== 'publikasi' ? 'display:none;' : '' ?>">
-            <label class="font-weight-bold">Subkategori Header (Publikasi)</label>
-            <select class="form-control" name="subcategory">
-              <option value="Jurnal Internasional">Jurnal Internasional</option>
-              <option value="Prosiding Internasional">Prosiding Internasional</option>
-              <option value="Jurnal Nasional">Jurnal Nasional</option>
+          <?php
+            $initActiveCat = in_array($initCat, ['publikasi', 'hki', 'buku'], true) ? $initCat : 'publikasi';
+            $initSubcatOpts = $subcatMap[$initActiveCat] ?? $subcatMap['publikasi'];
+            $initSubcatLabel = match($initCat) {
+                'hki' => 'Jenis HKI / Hak Cipta / Paten',
+                'buku' => 'Kategori / Jenis Buku',
+                default => 'Subkategori Header (Publikasi)',
+            };
+            $showInitSubcat = in_array($initCat, ['all', 'publikasi', 'hki', 'buku'], true);
+          ?>
+          <div class="form-group col-md-4" id="newSubcatWrap" style="<?= !$showInitSubcat ? 'display:none;' : '' ?>">
+            <label class="font-weight-bold" id="newSubcatLabel"><?= $initSubcatLabel ?></label>
+            <select class="form-control" name="subcategory" id="newSubcatSelect">
+              <?php foreach ($initSubcatOpts as $opt): ?>
+                <option value="<?= e($opt) ?>"><?= e($opt) ?></option>
+              <?php endforeach; ?>
             </select>
           </div>
 
@@ -231,8 +274,9 @@ admin_header('Kelola Publikasi & Riset');
             <input type="text" class="form-control" name="journal_meta" placeholder="Contoh: (2024), Journal Name Vol. 10 / No. Paten: EC002021... / Penerbit: UB Press">
           </div>
           <div class="form-group col-md-5">
-            <label class="font-weight-bold">Link URL Jurnal / DOI / Dokumen (Opsional)</label>
-            <input type="url" class="form-control" name="url" placeholder="https://journal.example.com/...">
+            <label class="font-weight-bold" id="newUrlLabel"><i class="fa-solid fa-link text-primary mr-1"></i> Link URL / Google Drive / DOI / Dokumen</label>
+            <input type="url" class="form-control" name="url" id="newUrlInput" placeholder="https://drive.google.com/... atau https://...">
+            <small class="form-text text-muted" id="newUrlHint">Bisa diisi link Google Drive (PDF Buku, Sertifikat HKI, Dokumen), DOI, atau URL website.</small>
           </div>
         </div>
 
@@ -339,9 +383,16 @@ admin_header('Kelola Publikasi & Riset');
                     <div class="small text-truncate text-muted" style="max-width: 240px;" title="<?= e($item['journal_meta']) ?>"><?= e($item['journal_meta']) ?></div>
                   <?php endif; ?>
                   <?php if (!empty($item['url']) && $item['url'] !== '#'): ?>
-                    <a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer" class="small text-primary font-weight-bold d-inline-block mt-1">
-                      <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>Buka Tautan
-                    </a>
+                    <?php $isDrive = str_contains(strtolower($item['url']), 'drive.google.com') || str_contains(strtolower($item['url']), 'docs.google.com'); ?>
+                    <div>
+                      <a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer" class="small <?= $isDrive ? 'text-success' : 'text-primary' ?> font-weight-bold d-inline-flex align-items-center mt-1">
+                        <?php if ($isDrive): ?>
+                          <i class="fa-brands fa-google-drive text-warning mr-1"></i> Google Drive
+                        <?php else: ?>
+                          <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Buka Tautan
+                        <?php endif; ?>
+                      </a>
+                    </div>
                   <?php endif; ?>
                 </td>
                 <td class="text-center">
@@ -383,7 +434,7 @@ admin_header('Kelola Publikasi & Riset');
                       <div class="row">
                         <div class="form-group col-md-3">
                           <label class="font-weight-bold">Kategori</label>
-                          <select class="form-control" name="category" onchange="handleCategoryChange(this.value, 'editSubcatWrap<?= (int) $item['id'] ?>')">
+                          <select class="form-control" name="category" onchange="handleCategoryChange(this.value, 'editSubcatWrap<?= (int) $item['id'] ?>', 'editSubcatSelect<?= (int) $item['id'] ?>', 'editSubcatLabel<?= (int) $item['id'] ?>', 'editMetaLabel<?= (int) $item['id'] ?>', 'editUrlLabel<?= (int) $item['id'] ?>', 'editUrlHint<?= (int) $item['id'] ?>')">
                             <option value="publikasi" <?= $cat === 'publikasi' ? 'selected' : '' ?>>Publikasi</option>
                             <option value="riset" <?= $cat === 'riset' ? 'selected' : '' ?>>Riset</option>
                             <option value="pengabdian" <?= $cat === 'pengabdian' ? 'selected' : '' ?>>Pengabdian</option>
@@ -392,12 +443,25 @@ admin_header('Kelola Publikasi & Riset');
                           </select>
                         </div>
 
-                        <div class="form-group col-md-3" id="editSubcatWrap<?= (int) $item['id'] ?>" style="<?= $cat !== 'publikasi' ? 'display:none;' : '' ?>">
-                          <label class="font-weight-bold">Subkategori</label>
-                          <select class="form-control" name="subcategory">
-                            <option value="Jurnal Internasional" <?= ($item['subcategory'] ?? '') === 'Jurnal Internasional' ? 'selected' : '' ?>>Jurnal Internasional</option>
-                            <option value="Prosiding Internasional" <?= ($item['subcategory'] ?? '') === 'Prosiding Internasional' ? 'selected' : '' ?>>Prosiding Internasional</option>
-                            <option value="Jurnal Nasional" <?= ($item['subcategory'] ?? '') === 'Jurnal Nasional' ? 'selected' : '' ?>>Jurnal Nasional</option>
+                        <?php
+                          $itemSubcatOptions = $subcatMap[$cat] ?? [];
+                          $showSubcat = !empty($itemSubcatOptions);
+                          $itemSubcatLabel = match($cat) {
+                              'hki' => 'Jenis HKI',
+                              'buku' => 'Kategori Buku',
+                              default => 'Subkategori',
+                          };
+                        ?>
+                        <div class="form-group col-md-3" id="editSubcatWrap<?= (int) $item['id'] ?>" style="<?= !$showSubcat ? 'display:none;' : '' ?>">
+                          <label class="font-weight-bold" id="editSubcatLabel<?= (int) $item['id'] ?>"><?= $itemSubcatLabel ?></label>
+                          <select class="form-control" name="subcategory" id="editSubcatSelect<?= (int) $item['id'] ?>">
+                            <?php if ($showSubcat): ?>
+                              <?php foreach ($itemSubcatOptions as $opt): ?>
+                                <option value="<?= e($opt) ?>" <?= ($item['subcategory'] ?? '') === $opt ? 'selected' : '' ?>><?= e($opt) ?></option>
+                              <?php endforeach; ?>
+                            <?php else: ?>
+                              <option value="<?= e($item['subcategory'] ?? '') ?>" selected><?= e($item['subcategory'] ?? '') ?></option>
+                            <?php endif; ?>
                           </select>
                         </div>
 
@@ -431,12 +495,13 @@ admin_header('Kelola Publikasi & Riset');
 
                       <div class="row">
                         <div class="form-group col-md-7">
-                          <label class="font-weight-bold">Metadata Sitasi / No. Paten / Penerbit</label>
+                          <label class="font-weight-bold" id="editMetaLabel<?= (int) $item['id'] ?>">Metadata Sitasi / No. Paten / Penerbit</label>
                           <input type="text" class="form-control" name="journal_meta" value="<?= e($item['journal_meta'] ?? '') ?>">
                         </div>
                         <div class="form-group col-md-5">
-                          <label class="font-weight-bold">Link URL Jurnal / DOI</label>
-                          <input type="url" class="form-control" name="url" value="<?= e($item['url'] ?? '') ?>">
+                          <label class="font-weight-bold" id="editUrlLabel<?= (int) $item['id'] ?>"><i class="fa-solid fa-link text-primary mr-1"></i> Link URL / Google Drive / Dokumen</label>
+                          <input type="url" class="form-control" name="url" value="<?= e($item['url'] ?? '') ?>" placeholder="https://drive.google.com/... atau https://...">
+                          <small class="form-text text-muted" id="editUrlHint<?= (int) $item['id'] ?>">Bisa diisi link Google Drive (PDF Buku / Sertifikat HKI), DOI, atau web eksternal.</small>
                         </div>
                       </div>
 
@@ -481,10 +546,66 @@ var currentCategory = '<?= e($initCat) ?>';
 var currentPage = <?= (int) $initPage ?>;
 var pageSize = 10;
 
-function handleCategoryChange(category, subcatWrapId, metaLabelId) {
-  var subcatWrap = document.getElementById(subcatWrapId);
-  if (subcatWrap) {
-    subcatWrap.style.display = (category === 'publikasi') ? 'block' : 'none';
+var subcategoryOptions = {
+  publikasi: [
+    { value: 'Jurnal Internasional', text: 'Jurnal Internasional' },
+    { value: 'Prosiding Internasional', text: 'Prosiding Internasional' },
+    { value: 'Jurnal Nasional', text: 'Jurnal Nasional' }
+  ],
+  hki: [
+    { value: 'Hak Cipta', text: 'Hak Cipta' },
+    { value: 'Paten', text: 'Paten' },
+    { value: 'Paten Sederhana', text: 'Paten Sederhana' },
+    { value: 'Desain Industri', text: 'Desain Industri' },
+    { value: 'Merek', text: 'Merek' }
+  ],
+  buku: [
+    { value: 'Buku Referensi', text: 'Buku Referensi' },
+    { value: 'Buku Ajar', text: 'Buku Ajar' },
+    { value: 'Monograf', text: 'Monograf' },
+    { value: 'Book Chapter', text: 'Book Chapter' }
+  ]
+};
+
+function handleCategoryChange(category, subcatWrapId, subcatSelectId, subcatLabelId, metaLabelId, urlLabelId, urlHintId) {
+  var subcatWrap = subcatWrapId ? document.getElementById(subcatWrapId) : null;
+  var subcatSelect = subcatSelectId ? document.getElementById(subcatSelectId) : null;
+  var subcatLabel = subcatLabelId ? document.getElementById(subcatLabelId) : null;
+
+  if (subcatWrap && subcatSelect) {
+    if (subcategoryOptions[category]) {
+      subcatWrap.style.display = 'block';
+      if (subcatLabel) {
+        if (category === 'publikasi') subcatLabel.innerText = 'Subkategori Header (Publikasi)';
+        else if (category === 'hki') subcatLabel.innerText = 'Jenis HKI / Hak Cipta / Paten';
+        else if (category === 'buku') subcatLabel.innerText = 'Kategori / Jenis Buku';
+      }
+      var currentVal = subcatSelect.value;
+      subcatSelect.innerHTML = '';
+      var matched = false;
+      subcategoryOptions[category].forEach(function(opt) {
+        var el = document.createElement('option');
+        el.value = opt.value;
+        el.innerText = opt.text;
+        if (opt.value === currentVal) {
+          el.selected = true;
+          matched = true;
+        }
+        subcatSelect.appendChild(el);
+      });
+      if (!matched && subcategoryOptions[category].length > 0) {
+        subcatSelect.options[0].selected = true;
+      }
+    } else {
+      subcatWrap.style.display = 'none';
+      subcatSelect.innerHTML = '';
+      var defaultVal = (category === 'riset') ? 'Penelitian' : (category === 'pengabdian' ? 'Pengabdian Masyarakat' : '');
+      var el = document.createElement('option');
+      el.value = defaultVal;
+      el.innerText = defaultVal;
+      el.selected = true;
+      subcatSelect.appendChild(el);
+    }
   }
 
   var metaLabel = metaLabelId ? document.getElementById(metaLabelId) : null;
@@ -501,6 +622,31 @@ function handleCategoryChange(category, subcatWrapId, metaLabelId) {
       metaLabel.innerText = 'Tahun & Skema / Mitra Pengabdian';
     } else {
       metaLabel.innerText = 'Metadata / Informasi Tambahan';
+    }
+  }
+
+  var urlLabel = urlLabelId ? document.getElementById(urlLabelId) : null;
+  var urlHint = urlHintId ? document.getElementById(urlHintId) : null;
+  if (urlLabel) {
+    if (category === 'buku') {
+      urlLabel.innerHTML = '<i class="fa-brands fa-google-drive text-success mr-1"></i> Link Google Drive / URL Buku';
+    } else if (category === 'hki') {
+      urlLabel.innerHTML = '<i class="fa-brands fa-google-drive text-warning mr-1"></i> Link Google Drive / Sertifikat HKI';
+    } else if (category === 'publikasi') {
+      urlLabel.innerHTML = '<i class="fa-solid fa-link text-primary mr-1"></i> Link URL Jurnal / DOI / Scholar';
+    } else {
+      urlLabel.innerHTML = '<i class="fa-solid fa-link text-primary mr-1"></i> Link Dokumen / Google Drive / URL';
+    }
+  }
+  if (urlHint) {
+    if (category === 'buku') {
+      urlHint.innerText = 'Bisa diisi link Google Drive file buku/preview atau URL penerbit (akan tampil tombol klik di bawah penerbit).';
+    } else if (category === 'hki') {
+      urlHint.innerText = 'Bisa diisi link Google Drive file sertifikat HKI/paten (akan tampil tombol klik di bawah nomor/metadata).';
+    } else if (category === 'publikasi') {
+      urlHint.innerText = 'Bisa diisi link URL artikel jurnal, prosiding, atau profil Google Scholar.';
+    } else {
+      urlHint.innerText = 'Link dokumen/web (opsional).';
     }
   }
 }

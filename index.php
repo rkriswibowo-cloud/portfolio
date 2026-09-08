@@ -532,13 +532,37 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['form_type'] ?? '')
                                     <?php if (!empty($patentList)): ?>
                                         <div class="academic-items-list">
                                             <?php foreach ($patentList as $item): ?>
+                                                <?php
+                                                $hasUrl = !empty($item['url']) && $item['url'] !== '#';
+                                                $isDrive = $hasUrl && (str_contains(strtolower($item['url']), 'drive.google.com') || str_contains(strtolower($item['url']), 'docs.google.com'));
+                                                ?>
                                                 <div class="academic-item">
-                                                    <h4 class="academic-item-title"><?= e($item['title']) ?></h4>
+                                                    <div class="academic-item-title-wrap">
+                                                        <?php if ($hasUrl): ?>
+                                                            <a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer" class="academic-item-title academic-link-hover">
+                                                                <?= e($item['title']) ?>
+                                                                <i class="fa-solid fa-arrow-up-right-from-square academic-external-icon"></i>
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <h4 class="academic-item-title"><?= e($item['title']) ?></h4>
+                                                        <?php endif; ?>
+                                                    </div>
                                                     <?php if (!empty($item['authors'])): ?>
                                                         <p class="academic-item-authors"><?= e($item['authors']) ?></p>
                                                     <?php endif; ?>
                                                     <?php if (!empty($item['journal_meta'])): ?>
                                                         <p class="academic-item-citation"><?= e($item['journal_meta']) ?></p>
+                                                    <?php endif; ?>
+                                                    <?php if ($hasUrl): ?>
+                                                        <div class="academic-item-action">
+                                                            <a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer" class="academic-doc-link <?= $isDrive ? 'drive-link' : '' ?>">
+                                                                <?php if ($isDrive): ?>
+                                                                    <i class="fa-brands fa-google-drive"></i> <?= e(__t('academic_open_drive_patent')) ?>
+                                                                <?php else: ?>
+                                                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> <?= e(__t('academic_open_external_patent')) ?>
+                                                                <?php endif; ?>
+                                                            </a>
+                                                        </div>
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endforeach; ?>
@@ -558,13 +582,37 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && ($_POST['form_type'] ?? '')
                                     <?php if (!empty($bookList)): ?>
                                         <div class="academic-items-list">
                                             <?php foreach ($bookList as $item): ?>
+                                                <?php
+                                                $hasUrl = !empty($item['url']) && $item['url'] !== '#';
+                                                $isDrive = $hasUrl && (str_contains(strtolower($item['url']), 'drive.google.com') || str_contains(strtolower($item['url']), 'docs.google.com'));
+                                                ?>
                                                 <div class="academic-item">
-                                                    <h4 class="academic-item-title"><?= e($item['title']) ?></h4>
+                                                    <div class="academic-item-title-wrap">
+                                                        <?php if ($hasUrl): ?>
+                                                            <a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer" class="academic-item-title academic-link-hover">
+                                                                <?= e($item['title']) ?>
+                                                                <i class="fa-solid fa-arrow-up-right-from-square academic-external-icon"></i>
+                                                            </a>
+                                                        <?php else: ?>
+                                                            <h4 class="academic-item-title"><?= e($item['title']) ?></h4>
+                                                        <?php endif; ?>
+                                                    </div>
                                                     <?php if (!empty($item['authors'])): ?>
                                                         <p class="academic-item-authors"><?= e($item['authors']) ?></p>
                                                     <?php endif; ?>
                                                     <?php if (!empty($item['journal_meta'])): ?>
                                                         <p class="academic-item-citation"><?= e($item['journal_meta']) ?></p>
+                                                    <?php endif; ?>
+                                                    <?php if ($hasUrl): ?>
+                                                        <div class="academic-item-action">
+                                                            <a href="<?= e($item['url']) ?>" target="_blank" rel="noopener noreferrer" class="academic-doc-link <?= $isDrive ? 'drive-link' : '' ?>">
+                                                                <?php if ($isDrive): ?>
+                                                                    <i class="fa-brands fa-google-drive"></i> <?= e(__t('academic_open_drive_book')) ?>
+                                                                <?php else: ?>
+                                                                    <i class="fa-solid fa-arrow-up-right-from-square"></i> <?= e(__t('academic_open_external_book')) ?>
+                                                                <?php endif; ?>
+                                                            </a>
+                                                        </div>
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endforeach; ?>

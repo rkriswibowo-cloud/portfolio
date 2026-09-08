@@ -929,8 +929,22 @@ function save_academic_record(array $data, ?PDO $pdo = null): int
         throw new InvalidArgumentException('Judul karya/riset/publikasi wajib diisi.');
     }
 
-    if ($category === 'publikasi' && $subcategory === '') {
-        $subcategory = 'Jurnal Internasional';
+    if ($category === 'publikasi') {
+        if (!in_array($subcategory, ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'], true)) {
+            $subcategory = 'Jurnal Internasional';
+        }
+    } elseif ($category === 'hki') {
+        if ($subcategory === '' || in_array($subcategory, ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'], true)) {
+            $subcategory = 'Hak Cipta';
+        }
+    } elseif ($category === 'buku') {
+        if ($subcategory === '' || in_array($subcategory, ['Jurnal Internasional', 'Prosiding Internasional', 'Jurnal Nasional'], true)) {
+            $subcategory = 'Buku Referensi';
+        }
+    } elseif ($category === 'riset') {
+        $subcategory = 'Penelitian';
+    } elseif ($category === 'pengabdian') {
+        $subcategory = 'Pengabdian Masyarakat';
     }
 
     if ($id > 0) {
