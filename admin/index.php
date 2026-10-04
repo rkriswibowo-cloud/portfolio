@@ -68,7 +68,16 @@ $stats = [
     'inactive_users' => (int) $pdo->query('SELECT COUNT(*) FROM users WHERE COALESCE(is_active, 1) = 0')->fetchColumn(),
     'tech_stacks' => count(get_tech_stacks($pdo, false)),
     'academic' => count(get_academic_records($pdo, null, false)),
+    'assignments' => 0,
+    'ungraded_submissions' => 0,
 ];
+
+try {
+    $stats['assignments'] = (int) $pdo->query('SELECT COUNT(*) FROM course_assignments')->fetchColumn();
+    $stats['ungraded_submissions'] = (int) $pdo->query("SELECT COUNT(*) FROM course_assignment_submissions WHERE status = 'submitted'")->fetchColumn();
+} catch (Throwable $e) {
+    // Tabel database belum dibuat
+}
 
 $monitoringTotal = count_admin_user_course_monitoring($pdo);
 $totalPages = max(1, (int) ceil($monitoringTotal / $perPage));
@@ -131,7 +140,7 @@ admin_header('Dashboard');
       </div>
       <div class="col-sm-6 col-xl-4">
         <div class="admin-card stat-card stat-card-modern">
-          <span><i class="uil uil-graduation-cap"></i> Publikasi & Riset</span>
+          <span><i class="uil uil-graduation-hat"></i> Publikasi & Riset</span>
           <strong><?= e((string) $stats['academic']) ?></strong>
           <small>karya & publikasi</small>
         </div>
@@ -142,6 +151,15 @@ admin_header('Dashboard');
           <strong><?= e((string) $stats['tech_stacks']) ?></strong>
           <small>teknologi di slider</small>
         </div>
+      </div>
+      <div class="col-sm-6 col-xl-4">
+        <a href="course_grades.php" class="text-decoration-none">
+          <div class="admin-card stat-card stat-card-modern" style="border: 2px solid #ffc200; background: linear-gradient(to bottom, #ffffff, #fffdf5);">
+            <span class="text-dark"><i class="fa-solid fa-graduation-cap text-warning"></i> Rekap & Export Nilai</span>
+            <strong class="text-dark"><?= e((string) $stats['assignments']) ?></strong>
+            <small class="text-warning font-weight-bold"><?= $stats['ungraded_submissions'] > 0 ? e((string) $stats['ungraded_submissions']) . ' tugas perlu dinilai &bull; Export' : 'Semua dinilai &bull; Export CSV' ?></small>
+          </div>
+        </a>
       </div>
     </div>
   </div>

@@ -279,6 +279,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $statement = $pdo->prepare('DELETE FROM course_quizzes WHERE id = ?');
             $statement->execute([(int) ($_POST['id'] ?? 0)]);
             set_admin_flash('success', 'Quiz berhasil dihapus.');
+        } elseif ($action === 'save_assignment') {
+            $id = (int) ($_POST['id'] ?? 0);
+            $meetingId = (int) ($_POST['meeting_id'] ?? 0);
+            $dueDateRaw = trim((string) ($_POST['due_date'] ?? ''));
+            $dueDate = null;
+            if ($dueDateRaw !== '') {
+                $dueDate = normalize_course_datetime($dueDateRaw);
+            }
+            $data = [
+                $meetingId,
+                trim((string) ($_POST['title'] ?? '')),
+                trim((string) ($_POST['description'] ?? '')),
+                $dueDate,
+                (int) ($_POST['sort_order'] ?? 0),
+                isset($_POST['is_active']) ? 1 : 0,
+            ];
+            if ($data[0] <= 0 || $data[1] === '') {
+                throw new RuntimeException('Pertemuan dan judul tugas wajib diisi.');
+            }
+            if ($id > 0) {
+                $statement = $pdo->prepare('UPDATE course_assignments SET meeting_id = ?, title = ?, description = ?, due_date = ?, sort_order = ?, is_active = ? WHERE id = ?');
+                $statement->execute(array_merge($data, [$id]));
+            } else {
+                $statement = $pdo->prepare('INSERT INTO course_assignments (meeting_id, title, description, due_date, sort_order, is_active) VALUES (?, ?, ?, ?, ?, ?)');
+                $statement->execute($data);
+            }
+            set_admin_flash('success', 'Tugas pertemuan berhasil disimpan.');
+        } elseif ($action === 'delete_assignment') {
+            $assignmentId = (int) ($_POST['id'] ?? 0);
+            $statement = $pdo->prepare('DELETE FROM course_assignments WHERE id = ?');
+            $statement->execute([$assignmentId]);
+            set_admin_flash('success', 'Tugas pertemuan berhasil dihapus.');
         } elseif ($action === 'delete_meeting') {
             $meetingId = (int) ($_POST['id'] ?? 0);
             if ($meetingId > 0) {
@@ -355,11 +387,13 @@ $courses = get_courses($pdo, false);
 $meetingsByCourse = [];
 $tokensByCourse = [];
 $quizzesByCourse = [];
+$assignmentsByCourse = [];
 foreach ($courses as $course) {
     $courseKey = (int) $course['id'];
     $meetingsByCourse[$courseKey] = get_course_meetings($courseKey, $pdo, false);
     $tokensByCourse[$courseKey] = find_course_enrollment_token($pdo, $courseKey);
     $quizzesByCourse[$courseKey] = get_course_quizzes($courseKey, $pdo, false);
+    $assignmentsByCourse[$courseKey] = get_course_assignments($courseKey, $pdo, false);
 }
 
 admin_header('Edit Courses');
@@ -440,7 +474,7 @@ admin_header('Edit Courses');
   <?php foreach ($courses as $course): ?>
     <div class="admin-card setting-card">
       <button class="settings-toggle" type="button" data-toggle="collapse" data-target="#course_<?= e((string) $course['id']) ?>" aria-expanded="false" aria-controls="course_<?= e((string) $course['id']) ?>">
-        <span><i class="uil uil-edit"></i> <?= e($course['title']) ?> <small><strong class="<?= e(admin_course_status_class($course)) ?>"><?= e(admin_course_status_label($course)) ?></strong> · <?= e(admin_course_status_detail($course)) ?> · Token enrollment: <?= $tokensByCourse[(int) $course['id']] ? e($tokensByCourse[(int) $course['id']]['token']) : 'Belum ada' ?> · <?= count($meetingsByCourse[(int) $course['id']] ?? []) ?> pertemuan · <?= count($quizzesByCourse[(int) $course['id']] ?? []) ?> quiz</small></span>
+        <span><i class="uil uil-edit"></i> <?= e($course['title']) ?> <small><strong class="<?= e(admin_course_status_class($course)) ?>"><?= e(admin_course_status_label($course)) ?></strong> · <?= e(admin_course_status_detail($course)) ?> · Token enrollment: <?= $tokensByCourse[(int) $course['id']] ? e($tokensByCourse[(int) $course['id']]['token']) : 'Belum ada' ?> · <?= count($meetingsByCourse[(int) $course['id']] ?? []) ?> pertemuan · <?= count($quizzesByCourse[(int) $course['id']] ?? []) ?> quiz · <?= count($assignmentsByCourse[(int) $course['id']] ?? []) ?> tugas</small></span>
         <i class="uil uil-angle-down"></i>
       </button>
       <div id="course_<?= e((string) $course['id']) ?>" class="collapse" data-parent="#courseListAccordion">
@@ -555,6 +589,111 @@ admin_header('Edit Courses');
               </div>
             </form>
           <?php endforeach; ?>
+
+          <hr>
+          <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h3 class="h5 mb-2 mb-md-0"><i class="uil uil-clipboard-notes"></i> Tugas Pertemuan</h3>
+            <a href="course_grades.php?course_id=<?= e((string) $course['id']) ?>" class="btn btn-sm btn-info font-weight-bold">
+              <i class="fa-solid fa-graduation-cap"></i> Penilaian & Export Nilai (<?= count($assignmentsByCourse[(int) $course['id']] ?? []) ?> Tugas)
+            </a>
+          </div>
+
+          <form method="post" action="courses.php" class="admin-nested-form mb-4">
+            <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+            <input type="hidden" name="action" value="save_assignment">
+            <input type="hidden" name="id" value="0">
+            <div class="row">
+              <div class="form-group col-md-4">
+                <label>Pertemuan</label>
+                <select class="form-control" name="meeting_id" required>
+                  <option value="">Pilih pertemuan</option>
+                  <?php foreach (($meetingsByCourse[(int) $course['id']] ?? []) as $meetingOption): ?>
+                    <option value="<?= e((string) $meetingOption['id']) ?>"><?= e($meetingOption['title']) ?></option>
+                  <?php endforeach; ?>
+                </select>
+              </div>
+              <div class="form-group col-md-5">
+                <label>Judul Tugas</label>
+                <input type="text" class="form-control" name="title" placeholder="Contoh: Tugas 1 - Desain UI Website" required>
+              </div>
+              <div class="form-group col-md-3">
+                <label>Batas Pengumpulan</label>
+                <input type="datetime-local" class="form-control" name="due_date">
+                <small class="form-text text-muted">Opsional (deadline).</small>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Deskripsi / Petunjuk Pengerjaan</label>
+              <textarea class="form-control" name="description" rows="3" placeholder="Tulis instruksi tugas, format pengumpulan (drive link/file), kriteria penilaian, dsb..."></textarea>
+            </div>
+            <div class="d-flex flex-wrap align-items-center">
+              <div class="form-group mr-3 mb-2">
+                <label>Urutan</label>
+                <input type="number" class="form-control" name="sort_order" value="0" style="width: 100px;">
+              </div>
+              <div class="custom-control custom-checkbox mr-3 mb-2 mt-4">
+                <input type="checkbox" class="custom-control-input" id="new_assignment_active_<?= e((string) $course['id']) ?>" name="is_active" checked>
+                <label class="custom-control-label" for="new_assignment_active_<?= e((string) $course['id']) ?>">Aktif</label>
+              </div>
+              <button type="submit" class="btn btn-sm btn-warning font-weight-bold mt-3">
+                <i class="uil uil-plus-circle"></i> Tambah Tugas
+              </button>
+            </div>
+          </form>
+
+          <?php if (empty($assignmentsByCourse[(int) $course['id']])): ?>
+            <p class="text-muted small">Belum ada tugas untuk course ini. Tambahkan tugas di atas.</p>
+          <?php else: ?>
+            <?php foreach (($assignmentsByCourse[(int) $course['id']] ?? []) as $assignment): ?>
+              <form method="post" action="courses.php" class="admin-nested-form mb-3">
+                <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                <input type="hidden" name="id" value="<?= e((string) $assignment['id']) ?>">
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label>Pertemuan</label>
+                    <select class="form-control" name="meeting_id" required>
+                      <?php foreach (($meetingsByCourse[(int) $course['id']] ?? []) as $meetingOption): ?>
+                        <option value="<?= e((string) $meetingOption['id']) ?>" <?= (int) $meetingOption['id'] === (int) $assignment['meeting_id'] ? 'selected' : '' ?>>
+                          <?= e($meetingOption['title']) ?>
+                        </option>
+                      <?php endforeach; ?>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-5">
+                    <label>Judul Tugas</label>
+                    <input type="text" class="form-control" name="title" value="<?= e($assignment['title']) ?>" required>
+                  </div>
+                  <div class="form-group col-md-3">
+                    <label>Batas Pengumpulan</label>
+                    <input type="datetime-local" class="form-control" name="due_date" value="<?= !empty($assignment['due_date']) ? date('Y-m-d\TH:i', strtotime($assignment['due_date'])) : '' ?>">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Deskripsi / Petunjuk Pengerjaan</label>
+                  <textarea class="form-control" name="description" rows="2"><?= e($assignment['description'] ?? '') ?></textarea>
+                </div>
+                <div class="d-flex flex-wrap align-items-center">
+                  <div class="form-group mr-3 mb-2">
+                    <label>Urutan</label>
+                    <input type="number" class="form-control" name="sort_order" value="<?= e((string) $assignment['sort_order']) ?>" style="width: 100px;">
+                  </div>
+                  <div class="custom-control custom-checkbox mr-3 mb-2 mt-4">
+                    <input type="checkbox" class="custom-control-input" id="assignment_active_<?= e((string) $assignment['id']) ?>" name="is_active" <?= (int) $assignment['is_active'] === 1 ? 'checked' : '' ?>>
+                    <label class="custom-control-label" for="assignment_active_<?= e((string) $assignment['id']) ?>">Aktif</label>
+                  </div>
+                  <button type="submit" name="action" value="save_assignment" class="btn btn-sm btn-warning font-weight-bold mr-2 mb-2 mt-3">
+                    <i class="uil uil-check-circle"></i> Simpan Tugas
+                  </button>
+                  <button type="submit" name="action" value="delete_assignment" class="btn btn-sm btn-outline-danger mr-2 mb-2 mt-3" onclick="return confirm('Hapus tugas ini beserta seluruh riwayat pengumpulannya?')">
+                    <i class="uil uil-trash-alt"></i> Hapus
+                  </button>
+                  <a href="course_grades.php?course_id=<?= e((string) $course['id']) ?>&assignment_id=<?= e((string) $assignment['id']) ?>" class="btn btn-sm btn-outline-info font-weight-bold mb-2 mt-3">
+                    <i class="fa-solid fa-list-check"></i> Lihat Pengumpulan & Beri Nilai
+                  </a>
+                </div>
+              </form>
+            <?php endforeach; ?>
+          <?php endif; ?>
         </div>
       </div>
     </div>

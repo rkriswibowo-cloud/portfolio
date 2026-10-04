@@ -206,6 +206,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_type'] ?? '') === 'su
     set_user_flash('danger', 'Kamu belum memiliki akses ke kelas ini.');
     redirect('course.php?id=' . $postedCourseId);
 }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_type'] ?? '') === 'submit_assignment') {
+    verify_csrf_token();
+    if (!user_logged_in()) {
+        set_user_flash('danger', 'Silakan login terlebih dahulu.');
+        redirect('user_login.php');
+    }
+    $postedCourseId = (int) ($_POST['course_id'] ?? 0);
+    $assignmentId = (int) ($_POST['assignment_id'] ?? 0);
+    $submissionType = (string) ($_POST['submission_type'] ?? 'drive_link');
+    $driveUrl = (string) ($_POST['drive_url'] ?? '');
+    $studentNotes = (string) ($_POST['student_notes'] ?? '');
+    $uploadedFile = $_FILES['assignment_file'] ?? [];
+
+    if ($postedCourseId > 0 && user_has_course_enrollment(current_user_id(), $postedCourseId, $pdo)) {
+        $result = submit_user_assignment(
+            current_user_id(),
+            $assignmentId,
+            $submissionType,
+            $driveUrl,
+            $uploadedFile,
+            $studentNotes,
+            $pdo
+        );
+        set_user_flash($result['ok'] ? 'success' : 'danger', $result['message']);
+        redirect('course.php?id=' . $postedCourseId . '#assignment_' . $assignmentId);
+    }
+    set_user_flash('danger', 'Kamu belum memiliki akses ke kelas ini.');
+    redirect('course.php?id=' . $postedCourseId);
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_type'] ?? '') === 'course_enrollment') {
     verify_csrf_token();
     $postedCourseId = (int) ($_POST['course_id'] ?? 0);
@@ -338,6 +367,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form_type'] ?? '') === 'do
     course_stream_material_file($filePath, $downloadName);
 }
 
+if (isset($_GET['download_submission'])) {
+    if (!user_logged_in()) {
+        set_user_flash('danger', 'Silakan login terlebih dahulu.');
+        redirect('user_login.php');
+    }
+    $subId = (int) $_GET['download_submission'];
+    $st = $pdo->prepare('SELECT * FROM course_assignment_submissions WHERE id = ?');
+    $st->execute([$subId]);
+    $sub = $st->fetch();
+    if ($sub && ((int) $sub['user_id'] === current_user_id() || admin_logged_in())) {
+        $storagePath = assignment_submission_storage_path($sub['file_path']);
+        if ($storagePath && is_file($storagePath)) {
+            $dlName = !empty($sub['file_name']) ? $sub['file_name'] : basename($storagePath);
+            course_stream_material_file($storagePath, $dlName);
+        }
+    }
+    set_user_flash('danger', 'File tugas tidak ditemukan.');
+    redirect('course.php' . ($courseId > 0 ? '?id=' . $courseId : ''));
+}
+
 $hasEnrollment = $currentCourse && user_logged_in() && user_has_course_enrollment(current_user_id(), (int) $currentCourse['id'], $pdo);
 $hasAccess = $currentCourse && $courseStatus && $courseStatus['is_open'] && $hasEnrollment;
 if ($currentCourse && $hasAccess) {
@@ -350,6 +399,17 @@ $quizzesByMeeting = ($currentCourse && $hasAccess && $meetings) ? get_quizzes_by
 $allQuizIds = [];
 foreach ($quizzesByMeeting as $meetingQuizzes) { foreach ($meetingQuizzes as $quiz) { $allQuizIds[] = (int) $quiz['id']; } }
 $latestQuizAttempts = ($currentCourse && $hasAccess) ? get_latest_quiz_attempts(current_user_id(), $allQuizIds, $pdo) : [];
+
+$assignmentsByMeeting = ($currentCourse && $hasAccess && $meetings) ? get_assignments_by_meeting_ids(array_map(static fn(array $m): int => (int) $m['id'], $meetings), $pdo, true) : [];
+$allAssignmentIds = [];
+foreach ($assignmentsByMeeting as $meetingAssignments) {
+    foreach ($meetingAssignments as $a) {
+        $allAssignmentIds[] = (int) $a['id'];
+    }
+}
+$userAssignmentSubmissions = ($currentCourse && $hasAccess && !empty($allAssignmentIds)) ? get_user_assignment_submissions(current_user_id(), $allAssignmentIds, $pdo) : [];
+$courseGradeSummary = ($currentCourse && $hasAccess) ? calculate_course_grade_summary((int) $currentCourse['id'], current_user_id(), $pdo) : ['total_assignments' => 0, 'weight_per_assignment' => 0, 'submitted_count' => 0, 'graded_count' => 0, 'final_score' => 0, 'assignments' => []];
+
 $flash = get_user_flash();
 $pageTitle = $currentCourse ? $currentCourse['title'] . ' - Course' : ($settings['course_page_title'] ?? 'Course');
 ?>
@@ -365,7 +425,7 @@ $pageTitle = $currentCourse ? $currentCourse['title'] . ' - Course' : ($settings
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260514-course-dropdown">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20261004-footer-v2">
 </head>
 
 <body>
@@ -491,6 +551,25 @@ $pageTitle = $currentCourse ? $currentCourse['title'] . ' - Course' : ($settings
                         </div>
                         <small class="text-muted"><?= e((string) $progressSummary['percent']) ?>% selesai</small>
                     </div>
+                    <?php if (($courseGradeSummary['total_assignments'] ?? 0) > 0): ?>
+                    <div class="course-meeting-card mb-4 assignment-summary-banner" style="border-left: 4px solid #ffc200;">
+                        <div class="row align-items-center">
+                            <div class="col-md-7 mb-3 mb-md-0">
+                                <h3 class="h5 mb-1 font-weight-bold"><i class="uil uil-award text-warning"></i> Rekapitulasi Nilai Tugas</h3>
+                                <p class="text-muted small mb-0">
+                                    Total <?= e((string) $courseGradeSummary['total_assignments']) ?> tugas pertemuan (Bobot nilai: <?= e((string) $courseGradeSummary['weight_per_assignment']) ?>% per tugas).
+                                    <br><?= e((string) $courseGradeSummary['submitted_count']) ?> dari <?= e((string) $courseGradeSummary['total_assignments']) ?> tugas dikumpulkan &bull; <?= e((string) $courseGradeSummary['graded_count']) ?> sudah dinilai dosen/admin.
+                                </p>
+                            </div>
+                            <div class="col-md-5 text-left text-md-right mt-2 mt-md-0">
+                                <span class="small text-muted d-block font-weight-bold">Total Nilai Akhir Tugas:</span>
+                                <strong class="assignment-score-display">
+                                    <?= number_format((float) $courseGradeSummary['final_score'], 1) ?>% <span class="small" style="font-size: 14px; opacity: 0.85;">/ 100%</span>
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endif; ?>
                     <h2 class="mb-4">Materi Pertemuan</h2><?php if (!$meetings): ?><div class="text-center py-5">
                         <h3>Belum ada pertemuan</h3>
                         <p>Admin belum menambahkan materi untuk kelas ini.</p>
@@ -566,6 +645,243 @@ $pageTitle = $currentCourse ? $currentCourse['title'] . ' - Course' : ($settings
                             <?php endforeach; ?>
                         </div>
                         <?php endif; ?>
+
+                        <?php
+                            $meetingAssignments = $assignmentsByMeeting[$meetingId] ?? [];
+                        ?>
+                        <?php if ($meetingAssignments): ?>
+                        <div class="mt-4 pt-3 border-top assignment-meeting-section">
+                            <h4 class="h5 font-weight-bold text-warning mb-3">
+                                <i class="uil uil-clipboard-notes"></i> Tugas Pertemuan
+                            </h4>
+                            <?php foreach ($meetingAssignments as $assignment): ?>
+                                <?php
+                                    $aId = (int) $assignment['id'];
+                                    $submission = $userAssignmentSubmissions[$aId] ?? null;
+                                    $isSubmitted = !empty($submission);
+                                    $subStatus = $submission['status'] ?? ($isSubmitted && $submission['score'] !== null ? 'graded' : ($isSubmitted ? 'submitted' : 'none'));
+                                    $isGraded = ($isSubmitted && $subStatus === 'graded' && $submission['score'] !== null);
+                                    $isRevision = ($isSubmitted && $subStatus === 'revision');
+                                    $canEdit = (!$isSubmitted || $subStatus === 'submitted' || $isRevision);
+                                    $weight = $courseGradeSummary['weight_per_assignment'] ?? 0;
+                                ?>
+                                <div class="course-assignment-card mb-4" id="assignment_<?= $aId ?>">
+                                    <div class="course-assignment-header d-flex flex-wrap justify-content-between align-items-start align-items-md-center">
+                                        <div class="mb-2 mb-md-0 mr-md-3">
+                                            <h5 class="course-assignment-title mb-1 font-weight-bold"><?= e($assignment['title']) ?></h5>
+                                            <div class="course-assignment-meta d-flex flex-wrap align-items-center">
+                                                <span class="badge badge-warning text-dark font-weight-bold mr-2 mb-1">Bobot Nilai: <?= $weight ?>%</span>
+                                                <?php if (!empty($assignment['due_date'])): ?>
+                                                    <span class="assignment-due-date mb-1">
+                                                        <i class="uil uil-calendar-alt text-danger mr-1"></i> Batas Pengumpulan: <strong><?= date('d M Y, H:i', strtotime($assignment['due_date'])) ?> WIB</strong>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2 mt-md-0">
+                                            <?php if ($isGraded): ?>
+                                                <span class="badge badge-success px-3 py-2 font-weight-bold assignment-status-badge">
+                                                    <i class="uil uil-award mr-1"></i> Nilai: <?= number_format((float) $submission['score'], 1) ?> / 100 (Final)
+                                                </span>
+                                            <?php elseif ($isRevision): ?>
+                                                <span class="badge badge-danger px-3 py-2 font-weight-bold assignment-status-badge">
+                                                    <i class="uil uil-redo mr-1"></i> Perlu Revisi
+                                                </span>
+                                            <?php elseif ($isSubmitted): ?>
+                                                <span class="badge badge-warning px-3 py-2 font-weight-bold assignment-status-badge">
+                                                    <i class="uil uil-clock mr-1"></i> Menunggu Penilaian
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge badge-secondary px-3 py-2 font-weight-bold assignment-status-badge">
+                                                    <i class="uil uil-clock mr-1"></i> Belum Mengumpulkan
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                    <div class="course-assignment-body">
+                                        <?php if (!empty($assignment['description'])): ?>
+                                            <div class="assignment-instructions-box mb-3">
+                                                <span class="small font-weight-bold text-uppercase d-block mb-1 assignment-box-label">
+                                                    <i class="uil uil-info-circle mr-1"></i> Petunjuk Tugas:
+                                                </span>
+                                                <div class="assignment-instructions-text"><?= nl2br(e($assignment['description'])) ?></div>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($isGraded): ?>
+                                            <!-- Box Nilai Final (Selesai Dinilai Admin) -->
+                                            <div class="assignment-grade-box graded mb-3">
+                                                <div class="d-flex flex-wrap justify-content-between align-items-center">
+                                                    <div>
+                                                        <h5 class="assignment-grade-heading mb-1 font-weight-bold">
+                                                            <i class="uil uil-check-circle text-success mr-1"></i> Nilai Tugas: <?= number_format((float) $submission['score'], 1) ?> / 100
+                                                        </h5>
+                                                        <p class="mb-0 small assignment-grade-sub">
+                                                            Kontribusi ke Nilai Akhir: <strong>+<?= number_format((float) $submission['score'] * ($weight / 100.0), 2) ?>%</strong> (dari total bobot <?= $weight ?>%).
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <?php if (!empty($submission['feedback'])): ?>
+                                                    <hr class="my-2 assignment-divider">
+                                                    <div class="small">
+                                                        <strong class="assignment-box-label">Catatan / Feedback dari Admin/Dosen:</strong>
+                                                        <div class="assignment-feedback-text font-italic mt-1"><?= nl2br(e($submission['feedback'])) ?></div>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <div class="small text-muted mt-2 pt-2 border-top">
+                                                    <i class="uil uil-lock mr-1 text-success"></i> <strong>Tugas Selesai & Terkunci:</strong> Tugas ini telah dinilai secara final oleh dosen/admin dan tidak dapat diubah lagi.
+                                                </div>
+                                            </div>
+                                        <?php elseif ($isRevision): ?>
+                                            <!-- Box Permintaan Revisi -->
+                                            <div class="assignment-grade-box revision mb-3">
+                                                <div class="d-flex align-items-center mb-1">
+                                                    <h5 class="assignment-revision-heading mb-0 font-weight-bold">
+                                                        <i class="uil uil-exclamation-triangle text-danger mr-1"></i> Tugas Memerlukan Revisi
+                                                    </h5>
+                                                </div>
+                                                <p class="mb-0 small">
+                                                    Dosen/Admin meminta Anda untuk memperbaiki tugas ini. Silakan periksa catatan revisi di bawah dan kirimkan kembali berkas atau tautan tugas yang telah diperbaiki.
+                                                </p>
+                                                <?php if (!empty($submission['feedback'])): ?>
+                                                    <hr class="my-2 assignment-divider">
+                                                    <div class="small">
+                                                        <strong class="text-danger"><i class="uil uil-comment-alt-edit mr-1"></i> Catatan Revisi dari Dosen/Admin:</strong>
+                                                        <div class="assignment-revision-feedback font-italic mt-1 p-2 rounded"><?= nl2br(e($submission['feedback'])) ?></div>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php elseif ($isSubmitted): ?>
+                                            <!-- Box Menunggu Penilaian -->
+                                            <div class="assignment-grade-box waiting mb-3">
+                                                <i class="uil uil-clock mr-1"></i> <strong>Menunggu Penilaian</strong> — Tugas Anda telah berhasil dikumpulkan dan sedang menunggu penilaian dari dosen/admin. Selama belum dinilai, Anda masih dapat mengedit atau mengirim ulang tugas jika diperlukan.
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($isSubmitted): ?>
+                                            <!-- Rincian Tugas yang Sudah Dikumpulkan -->
+                                            <div class="assignment-detail-box mb-3">
+                                                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                                                    <span class="small font-weight-bold text-uppercase assignment-box-label">Berkas / Link yang Dikumpulkan:</span>
+                                                    <small class="assignment-submitted-time"><i class="uil uil-clock mr-1"></i> <?= date('d M Y, H:i', strtotime($submission['submitted_at'])) ?> WIB</small>
+                                                </div>
+                                                <?php if ($submission['submission_type'] === 'drive_link'): ?>
+                                                    <div class="d-flex align-items-center flex-wrap">
+                                                        <a href="<?= e($submission['drive_url'] ?? '#') ?>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary font-weight-bold mr-2 mb-2">
+                                                            <i class="uil uil-external-link-alt mr-1"></i> Buka Link Drive / Tugas
+                                                        </a>
+                                                        <span class="small assignment-url-preview mb-2"><?= e($submission['drive_url'] ?? '') ?></span>
+                                                    </div>
+                                                <?php else: ?>
+                                                    <div class="d-flex align-items-center flex-wrap">
+                                                        <a href="course.php?id=<?= e((string) $currentCourse['id']) ?>&download_submission=<?= (int) $submission['id'] ?>" class="btn btn-sm btn-outline-info font-weight-bold mr-2 mb-2">
+                                                            <i class="uil uil-file-download mr-1"></i> Unduh Berkas Tugas (<?= e($submission['file_name'] ?? 'File') ?>)
+                                                        </a>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <?php if (!empty($submission['student_notes'])): ?>
+                                                    <div class="mt-2 pt-2 assignment-notes-box small">
+                                                        <strong class="assignment-box-label">Catatan Anda:</strong>
+                                                        <div class="assignment-notes-text mt-1"><?= nl2br(e($submission['student_notes'])) ?></div>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <?php if ($canEdit): ?>
+                                            <!-- Form Pengumpulan / Revisi Tugas -->
+                                            <div class="<?= ($isSubmitted && !$isRevision) ? 'collapse mt-3' : 'mt-3' ?>" id="form_sub_<?= $aId ?>">
+                                                <div class="assignment-form-box">
+                                                    <h6 class="font-weight-bold mb-3 assignment-form-title">
+                                                        <i class="uil <?= $isRevision ? 'uil-redo text-danger' : ($isSubmitted ? 'uil-edit text-warning' : 'uil-cloud-upload text-warning') ?> mr-1"></i>
+                                                        <?= $isRevision ? 'Form Pengumpulan Revisi Tugas' : ($isSubmitted ? 'Perbarui / Kirim Ulang Tugas' : 'Form Pengumpulan Tugas') ?>
+                                                    </h6>
+                                                    <form method="post" action="course.php?id=<?= e((string) $currentCourse['id']) ?>" enctype="multipart/form-data">
+                                                        <input type="hidden" name="csrf_token" value="<?= e(csrf_token()) ?>">
+                                                        <input type="hidden" name="form_type" value="submit_assignment">
+                                                        <input type="hidden" name="course_id" value="<?= e((string) $currentCourse['id']) ?>">
+                                                        <input type="hidden" name="assignment_id" value="<?= $aId ?>">
+
+                                                        <!-- Pilihan Opsi Pengumpulan -->
+                                                        <div class="form-group mb-3">
+                                                            <label class="font-weight-bold small d-block mb-2 assignment-box-label">Pilih Opsi Pengumpulan Tugas:</label>
+                                                            <div class="row assignment-option-cards">
+                                                                <div class="col-12 col-sm-6 mb-2">
+                                                                    <label class="assignment-type-card <?= (!$isSubmitted || ($submission['submission_type'] ?? '') === 'drive_link') ? 'active' : '' ?>" for="type_drive_<?= $aId ?>" id="label_drive_<?= $aId ?>">
+                                                                        <input type="radio" id="type_drive_<?= $aId ?>" name="submission_type" value="drive_link" <?= (!$isSubmitted || ($submission['submission_type'] ?? '') === 'drive_link') ? 'checked' : '' ?> onchange="toggleSubmissionType(<?= $aId ?>, 'drive')">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="assignment-type-icon mr-2">
+                                                                                <i class="uil uil-link"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="assignment-type-heading">Kirim Link URL / Drive</div>
+                                                                                <small class="assignment-type-sub">Tautan Google Drive atau Git</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="col-12 col-sm-6 mb-2">
+                                                                    <label class="assignment-type-card <?= ($isSubmitted && ($submission['submission_type'] ?? '') === 'file_upload') ? 'active' : '' ?>" for="type_file_<?= $aId ?>" id="label_file_<?= $aId ?>">
+                                                                        <input type="radio" id="type_file_<?= $aId ?>" name="submission_type" value="file_upload" <?= ($isSubmitted && ($submission['submission_type'] ?? '') === 'file_upload') ? 'checked' : '' ?> onchange="toggleSubmissionType(<?= $aId ?>, 'file')">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="assignment-type-icon mr-2">
+                                                                                <i class="uil uil-upload-alt"></i>
+                                                                            </div>
+                                                                            <div>
+                                                                                <div class="assignment-type-heading">Upload File Dokumen</div>
+                                                                                <small class="assignment-type-sub">PDF, Word, ZIP, Gambar</small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Input Google Drive Link -->
+                                                        <div class="form-group" id="group_drive_<?= $aId ?>" style="<?= ($isSubmitted && ($submission['submission_type'] ?? '') === 'file_upload') ? 'display: none;' : '' ?>">
+                                                            <label class="small font-weight-bold assignment-input-label" for="drive_url_<?= $aId ?>">URL Link Google Drive / Repositori:</label>
+                                                            <input type="url" class="form-control assignment-input" id="drive_url_<?= $aId ?>" name="drive_url" placeholder="https://drive.google.com/..." value="<?= e($submission['drive_url'] ?? '') ?>">
+                                                            <small class="form-text assignment-input-help">Pastikan izin tautan Google Drive sudah diatur agar <strong>siapa saja yang memiliki link dapat melihat</strong>.</small>
+                                                        </div>
+
+                                                        <!-- Input Upload File -->
+                                                        <div class="form-group" id="group_file_<?= $aId ?>" style="<?= (!$isSubmitted || ($submission['submission_type'] ?? '') === 'drive_link') ? 'display: none;' : '' ?>">
+                                                            <label class="small font-weight-bold assignment-input-label" for="file_<?= $aId ?>">Pilih File Tugas:</label>
+                                                            <input type="file" class="form-control-file assignment-file-input" id="file_<?= $aId ?>" name="assignment_file" accept=".pdf,.zip,.rar,.7z,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.jpeg,.png">
+                                                            <small class="form-text assignment-input-help">Format yang didukung: PDF, ZIP, RAR, Word, Excel, PPT, Gambar. Maksimal 25MB. <?= $isSubmitted && !empty($submission['file_name']) ? '(File saat ini: ' . e($submission['file_name']) . ')' : '' ?></small>
+                                                        </div>
+
+                                                        <!-- Catatan Tambahan Siswa -->
+                                                        <div class="form-group mb-3">
+                                                            <label class="small font-weight-bold assignment-input-label" for="notes_<?= $aId ?>">Catatan / Keterangan Tambahan (Opsional):</label>
+                                                            <textarea class="form-control assignment-textarea" id="notes_<?= $aId ?>" name="student_notes" rows="2" placeholder="<?= $isRevision ? 'Catatan perbaikan revisi untuk dosen...' : 'Catatan untuk dosen mengenai tugas ini...' ?>"><?= e($submission['student_notes'] ?? '') ?></textarea>
+                                                        </div>
+
+                                                        <button type="submit" class="btn <?= $isRevision ? 'btn-danger' : 'btn-warning' ?> font-weight-bold px-4 btn-submit-assignment">
+                                                            <i class="uil <?= $isRevision ? 'uil-redo' : 'uil-check-circle' ?> mr-1"></i>
+                                                            <?= $isRevision ? 'Kirim Ulang Revisi Tugas' : ($isSubmitted ? 'Simpan Perubahan Tugas' : 'Kumpulkan Tugas') ?>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+
+                                            <?php if ($isSubmitted && !$isRevision): ?>
+                                                <div class="text-right mt-2">
+                                                    <button class="btn btn-sm btn-link font-weight-bold btn-toggle-re-submit" type="button" data-toggle="collapse" data-target="#form_sub_<?= $aId ?>" aria-expanded="false" aria-controls="form_sub_<?= $aId ?>">
+                                                        <i class="uil uil-edit mr-1"></i> Edit / Kirim Ulang Tugas
+                                                    </button>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <div class="alert alert-secondary mt-3 mb-0 small text-center">
+                                                <i class="uil uil-lock mr-1"></i> Tugas ini sudah dinilai secara final oleh admin/dosen dan pengumpulan tugas telah <strong>dikunci</strong>.
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
                     </article><?php endforeach; ?><?php endif; ?>
                 </section><?php endif; ?>
             </div>
@@ -637,6 +953,9 @@ $pageTitle = $currentCourse ? $currentCourse['title'] . ' - Course' : ($settings
                     </nav><?php endif; ?><?php endif; ?></div>
         </section><?php endif; ?>
     </main>
+
+    <?php include __DIR__ . '/footer.php'; ?>
+
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -645,6 +964,27 @@ $pageTitle = $currentCourse ? $currentCourse['title'] . ' - Course' : ($settings
     <script src="js/owl.carousel.min.js"></script>
     <script src="js/smoothscroll.js"></script>
     <script src="js/custom.js?v=20260506-dark-mobile"></script>
+    <script>
+    function toggleSubmissionType(assignmentId, type) {
+        var driveGroup = document.getElementById('group_drive_' + assignmentId);
+        var fileGroup = document.getElementById('group_file_' + assignmentId);
+        var labelDrive = document.getElementById('label_drive_' + assignmentId);
+        var labelFile = document.getElementById('label_file_' + assignmentId);
+        if (driveGroup && fileGroup) {
+            if (type === 'drive') {
+                driveGroup.style.display = 'block';
+                fileGroup.style.display = 'none';
+                if (labelDrive) labelDrive.classList.add('active');
+                if (labelFile) labelFile.classList.remove('active');
+            } else {
+                driveGroup.style.display = 'none';
+                fileGroup.style.display = 'block';
+                if (labelDrive) labelDrive.classList.remove('active');
+                if (labelFile) labelFile.classList.add('active');
+            }
+        }
+    }
+    </script>
 </body>
 
 </html>

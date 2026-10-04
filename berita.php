@@ -39,7 +39,7 @@ function news_date(?string $value): string
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260901-bilingual">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20261004-footer-v2">
   </head>
   <body>
 
@@ -216,15 +216,7 @@ function news_date(?string $value): string
       <?php endif; ?>
     </main>
 
-    <footer class="footer py-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 col-12">
-            <p class="copyright-text text-center">Copyright &copy; <?= date('Y') ?> <?= e($settings['footer_company'] ?? 'Marvel') ?>. <?= e(__t('footer_rights')) ?></p>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <?php include __DIR__ . '/footer.php'; ?>
 
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/popper.min.js"></script>

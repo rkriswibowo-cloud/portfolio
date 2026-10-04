@@ -188,7 +188,7 @@ if ($pdo) {
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260901-bilingual">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20261004-footer-v2">
 </head>
 
 <body>
@@ -351,6 +351,7 @@ if ($pdo) {
                         <?php foreach ($activeCourses as $course): ?>
                             <?php $status = user_course_frontend_status($course, $now, $appTimezone); ?>
                             <?php $progress = get_course_progress_summary(current_user_id(), (int) $course['id'], $pdo); ?>
+                            <?php $gradeSummary = calculate_course_grade_summary((int) $course['id'], current_user_id(), $pdo); ?>
 
                             <div class="col-lg-3 col-md-6 col-12 mb-4">
                                 <article class="course-card h-100 d-flex flex-column justify-content-between">
@@ -383,6 +384,16 @@ if ($pdo) {
                                                 <div class="progress" style="height: 8px;"><div class="progress-bar" role="progressbar" style="width: <?= e((string) $progress['percent']) ?>%;"></div></div>
                                                 <small class="text-muted"><?= e((string) $progress['completed']) ?> / <?= e((string) $progress['total']) ?> pertemuan</small>
                                             </div>
+
+                                            <?php if (($gradeSummary['total_assignments'] ?? 0) > 0): ?>
+                                                <div class="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                                                    <small class="font-weight-bold text-muted">Nilai Tugas</small>
+                                                    <span class="badge badge-warning text-dark font-weight-bold" style="font-size: 13px;"><?= number_format((float) $gradeSummary['final_score'], 1) ?>%</span>
+                                                </div>
+                                                <?php if (($gradeSummary['revision_count'] ?? 0) > 0): ?>
+                                                    <small class="text-danger font-weight-bold d-block mt-1"><i class="uil uil-exclamation-triangle mr-1"></i> <?= (int) $gradeSummary['revision_count'] ?> tugas butuh revisi</small>
+                                                <?php endif; ?>
+                                            <?php endif; ?>
 
                                             <small class="course-card-date">
                                                 Enroll:
@@ -535,11 +546,7 @@ if ($pdo) {
         </div>
     </main>
 
-    <footer class="footer py-4 bg-light mt-5 border-top">
-        <div class="container text-center">
-            <p class="mb-0 text-muted small">&copy; <?= date('Y') ?> <?= e($settings['site_brand'] ?? 'Marvel') ?>. Member Learning Portal.</p>
-        </div>
-    </footer>
+    <?php include __DIR__ . '/footer.php'; ?>
 
     <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/popper.min.js"></script>

@@ -2230,5 +2230,928 @@ body.dark-mode footer.bg-light {
   border-top-color: #26262b !important;
 }
 
+/* ==========================================================================
+   Course Assignments & Grading Component (Light & Dark Mode + Responsive)
+   ========================================================================== */
+
+/* Summary Banner */
+.assignment-summary-banner {
+  border-left: 4px solid #ffc200 !important;
+}
+
+.assignment-score-display {
+  font-size: 28px;
+  font-weight: 800;
+  color: #ffc200;
+  display: inline-block;
+}
+
+body:not(.dark-mode) .assignment-score-display {
+  color: #0f172a;
+}
+
+/* Assignment Card Container */
+.course-assignment-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: all 0.25s ease;
+}
+
+.course-assignment-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 16px 20px;
+}
+
+.course-assignment-title {
+  color: #0f172a;
+  font-size: 1.15rem;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.course-assignment-meta {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.assignment-due-date {
+  color: #475569;
+}
+
+.assignment-status-badge {
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.course-assignment-body {
+  padding: 20px;
+}
+
+/* Instructions Box */
+.assignment-instructions-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #ffc200;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.assignment-box-label {
+  color: #64748b;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.assignment-instructions-text {
+  color: #1e293b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Grading Status Alerts */
+.assignment-grade-box {
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.assignment-grade-box.graded {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #14532d;
+}
+
+.assignment-grade-heading {
+  color: #15803d;
+  font-size: 1.1rem;
+}
+
+.assignment-grade-sub {
+  color: #166534;
+}
+
+.assignment-divider {
+  border-top-color: rgba(22, 101, 52, 0.2);
+}
+
+.assignment-feedback-text {
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(134, 239, 172, 0.6);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.assignment-grade-box.waiting {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.assignment-grade-box.revision {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.assignment-revision-heading {
+  color: #dc2626;
+  font-size: 1.1rem;
+}
+
+.assignment-revision-feedback {
+  background: #ffffff;
+  border: 1px solid #fca5a5;
+  color: #7f1d1d;
+  line-height: 1.5;
+}
+
+/* Submitted Detail Box */
+.assignment-detail-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.assignment-submitted-time {
+  color: #64748b;
+}
+
+.assignment-url-preview {
+  color: #475569;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.assignment-notes-box {
+  border-top: 1px solid #e2e8f0;
+}
+
+.assignment-notes-text {
+  color: #334155;
+}
+
+/* Assignment Submission Form Box */
+.assignment-form-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.assignment-form-title {
+  color: #0f172a;
+}
+
+.assignment-input-label {
+  color: #334155;
+}
+
+.assignment-input-help {
+  color: #64748b;
+  font-size: 12.5px;
+  margin-top: 5px;
+}
+
+.assignment-input,
+.assignment-textarea {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
+  border-radius: 8px;
+}
+
+.assignment-input:focus,
+.assignment-textarea:focus {
+  border-color: #ffc200;
+  box-shadow: 0 0 0 3px rgba(255, 194, 0, 0.2);
+}
+
+.assignment-file-input {
+  color: #334155;
+}
+
+/* Option Cards (Radio Choice) */
+.assignment-type-card {
+  display: block;
+  width: 100%;
+  background: #ffffff;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.assignment-type-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.assignment-type-card:hover {
+  border-color: #cbd5e1;
+}
+
+.assignment-type-card.active,
+.assignment-type-card:has(input[type="radio"]:checked) {
+  background: #fffdf5;
+  border-color: #ffc200;
+  box-shadow: 0 2px 8px rgba(255, 194, 0, 0.15);
+}
+
+.assignment-type-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #fff8e6;
+  color: #d97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.assignment-type-card.active .assignment-type-icon,
+.assignment-type-card:has(input[type="radio"]:checked) .assignment-type-icon {
+  background: #ffc200;
+  color: #000000;
+}
+
+.assignment-type-heading {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #1e293b;
+  line-height: 1.3;
+}
+
+.assignment-type-sub {
+  color: #64748b;
+  font-size: 12px;
+  display: block;
+}
+
+.btn-toggle-re-submit {
+  color: #64748b;
+}
+
+.btn-toggle-re-submit:hover {
+  color: #ffc200;
+}
+
+/* ==========================================================================
+   Dark Mode Overrides for Course Assignments & Quizzes
+   ========================================================================== */
+body.dark-mode .course-assignment-card {
+  background: #18181d;
+  border-color: #2b2b36;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .course-assignment-header {
+  background: #1f1f26;
+  border-bottom-color: #2b2b36;
+}
+
+body.dark-mode .course-assignment-title {
+  color: #ffffff;
+}
+
+body.dark-mode .course-assignment-meta {
+  color: #cbd5e1;
+}
+
+body.dark-mode .assignment-due-date {
+  color: #e2e8f0;
+}
+
+body.dark-mode .assignment-instructions-box {
+  background: #121215;
+  border-color: #262630;
+  border-left-color: #ffc200;
+}
+
+body.dark-mode .assignment-box-label {
+  color: #94a3b8;
+}
+
+body.dark-mode .assignment-instructions-text {
+  color: #f1f5f9;
+}
+
+body.dark-mode .assignment-grade-box.graded {
+  background: #092615;
+  border-color: #166534;
+  color: #bbf7d0;
+}
+
+body.dark-mode .assignment-grade-heading {
+  color: #4ade80;
+}
+
+body.dark-mode .assignment-grade-sub {
+  color: #86efac;
+}
+
+body.dark-mode .assignment-feedback-text {
+  background: #06190e;
+  border-color: #14532d;
+  color: #dcfce7;
+}
+
+body.dark-mode .assignment-divider {
+  border-top-color: #14532d;
+}
+
+body.dark-mode .assignment-grade-box.waiting {
+  background: #2a1e05;
+  border-color: #78350f;
+  color: #fef08a;
+}
+
+body.dark-mode .assignment-grade-box.revision {
+  background: #2a0e10;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+
+body.dark-mode .assignment-revision-heading {
+  color: #f87171;
+}
+
+body.dark-mode .assignment-revision-feedback {
+  background: #1a0809;
+  border-color: #991b1b;
+  color: #fecaca;
+}
+
+body.dark-mode .assignment-detail-box {
+  background: #121215;
+  border-color: #262630;
+  color: #e2e8f0;
+}
+
+body.dark-mode .assignment-submitted-time {
+  color: #94a3b8;
+}
+
+body.dark-mode .assignment-url-preview {
+  color: #cbd5e1;
+}
+
+body.dark-mode .assignment-notes-box {
+  border-top-color: #262630;
+}
+
+body.dark-mode .assignment-notes-text {
+  color: #e2e8f0;
+}
+
+body.dark-mode .assignment-form-box {
+  background: #121215;
+  border-color: #262630;
+  color: #ffffff;
+}
+
+body.dark-mode .assignment-form-title {
+  color: #ffffff;
+}
+
+body.dark-mode .assignment-input-label {
+  color: #e2e8f0;
+}
+
+body.dark-mode .assignment-input-help {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .assignment-input,
+body.dark-mode .assignment-textarea {
+  background: #0c0c0f !important;
+  border-color: #333342 !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .assignment-input::placeholder,
+body.dark-mode .assignment-textarea::placeholder {
+  color: #64748b !important;
+}
+
+body.dark-mode .assignment-input:focus,
+body.dark-mode .assignment-textarea:focus {
+  background: #0c0c0f !important;
+  border-color: #ffc200 !important;
+  box-shadow: 0 0 0 3px rgba(255, 194, 0, 0.25) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .assignment-file-input {
+  color: #cbd5e1;
+}
+
+body.dark-mode .assignment-type-card {
+  background: #191920;
+  border-color: #2b2b36;
+}
+
+body.dark-mode .assignment-type-card:hover {
+  border-color: #404052;
+}
+
+body.dark-mode .assignment-type-card.active,
+body.dark-mode .assignment-type-card:has(input[type="radio"]:checked) {
+  background: #242114;
+  border-color: #ffc200;
+  box-shadow: 0 2px 12px rgba(255, 194, 0, 0.2);
+}
+
+body.dark-mode .assignment-type-icon {
+  background: #23232c;
+  color: #ffc200;
+}
+
+body.dark-mode .assignment-type-card.active .assignment-type-icon,
+body.dark-mode .assignment-type-card:has(input[type="radio"]:checked) .assignment-type-icon {
+  background: #ffc200;
+  color: #000000;
+}
+
+body.dark-mode .assignment-type-heading {
+  color: #ffffff;
+}
+
+body.dark-mode .assignment-type-sub {
+  color: #94a3b8;
+}
+
+body.dark-mode .btn-toggle-re-submit {
+  color: #94a3b8;
+}
+
+body.dark-mode .btn-toggle-re-submit:hover {
+  color: #ffc200;
+}
+
+/* Dark mode for Quiz Cards inside course */
+body.dark-mode .course-meeting-card .card {
+  background: #18181d !important;
+  border-color: #2b2b36 !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-mode .course-meeting-card .card strong {
+  color: #ffffff;
+}
+
+body.dark-mode .course-meeting-card .custom-control-label {
+  color: #cbd5e1;
+}
+
+body.dark-mode .course-meeting-card .custom-control-input:checked ~ .custom-control-label {
+  color: #ffc200;
+}
+
+/* ==========================================================================
+   Mobile Responsiveness for Course Assignments
+   ========================================================================== */
+@media (max-width: 767px) {
+  .course-assignment-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    padding: 14px 16px;
+    gap: 10px;
+  }
+
+  .course-assignment-header > div:last-child {
+    width: 100%;
+  }
+
+  .assignment-status-badge {
+    display: inline-block;
+    width: auto;
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+
+  .course-assignment-body {
+    padding: 16px;
+  }
+
+  .assignment-form-box {
+    padding: 16px;
+  }
+
+  .btn-submit-assignment {
+    width: 100%;
+    display: block;
+    padding: 12px;
+    font-size: 15px;
+  }
+
+  .assignment-score-display {
+    font-size: 24px;
+  }
+
+  .assignment-url-preview {
+    font-size: 12px;
+    width: 100%;
+  }
+}
+
+/* ==============================================================
+   MODERN TECH & ACADEMIC MULTI-COLUMN FOOTER
+   ============================================================== */
+.site-footer {
+  background: #0f172a;
+  color: #94a3b8;
+  position: relative;
+  overflow: visible;
+  margin-top: 60px;
+}
+
+.site-footer a {
+  color: #94a3b8;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.site-footer a:hover {
+  color: #ffc200;
+}
+
+.footer-top-accent {
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, #ffc200 50%, transparent 100%);
+  opacity: 0.85;
+}
+
+.footer-brand-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #ffffff !important;
+  letter-spacing: -0.5px;
+  display: inline-block;
+}
+
+.footer-brand-dot {
+  color: #ffc200;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.footer-brand-sub {
+  font-size: 12.5px;
+  letter-spacing: 0.5px;
+}
+
+.footer-bio-text {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #94a3b8 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 480px;
+}
+
+/* Pulsing Status Badge */
+.footer-badge-status {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  border-radius: 50px;
+  padding: 5px 12px;
+  font-size: 12px;
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.badge-status-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+/* Social Buttons */
+.footer-social-icons {
+  gap: 8px;
+}
+
+.footer-social-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e2e8f0 !important;
+  font-size: 18px;
+  transition: all 0.25s ease;
+}
+
+.footer-social-btn:hover {
+  background: #ffc200;
+  border-color: #ffc200;
+  color: #0f172a !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(255, 194, 0, 0.35);
+}
+
+/* Column Headings */
+.footer-col-heading {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.footer-col-heading::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 24px;
+  height: 2px;
+  background: #ffc200;
+  border-radius: 2px;
+}
+
+/* Compatibility alias for Unicons graduation cap/hat and signin */
+.uil-graduation-cap:before,
+.uil-graduation-hat:before {
+  content: '\ea06';
+}
+
+.uil-signin:before,
+.uil-sign-in-alt:before {
+  content: '\eb2c';
+}
+
+/* ==============================================================
+   FOOTER INTERACTIVE COLLAPSIBLE DRAWER & DROPDOWN (RESPONSIVE)
+   ============================================================== */
+.btn-footer-collapse,
+.btn-footer-dropdown {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0;
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  text-decoration: none !important;
+  cursor: pointer;
+  outline: none !important;
+  box-shadow: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-footer-collapse:hover,
+.btn-footer-collapse:focus,
+.btn-footer-dropdown:hover,
+.btn-footer-dropdown:focus {
+  background: rgba(255, 194, 0, 0.1);
+  border-color: rgba(255, 194, 0, 0.5);
+  color: #ffc200;
+}
+
+.btn-footer-collapse.is-active,
+.btn-footer-collapse[aria-expanded="true"],
+.dropdown.show .btn-footer-dropdown {
+  background: rgba(255, 194, 0, 0.15);
+  border-color: #ffc200;
+  color: #ffc200;
+  box-shadow: 0 4px 16px rgba(255, 194, 0, 0.2);
+}
+
+.btn-footer-dropdown::after {
+  display: none !important;
+}
+
+.footer-chevron {
+  font-size: 18px;
+  color: #94a3b8;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.25s ease;
+  pointer-events: none;
+}
+
+.btn-footer-collapse.is-active .footer-chevron,
+.btn-footer-collapse[aria-expanded="true"] .footer-chevron,
+.dropdown.show .footer-chevron {
+  transform: rotate(180deg);
+  color: #ffc200;
+}
+
+/* Collapsible Panel Drawer */
+.footer-collapse-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  opacity: 0;
+}
+
+.footer-collapse-panel.is-open,
+.footer-collapse-panel.show {
+  opacity: 1;
+}
+
+.footer-collapse-body {
+  background: #0b1120;
+  border: 1px solid rgba(255, 194, 0, 0.25);
+  border-radius: 12px;
+  padding: 8px;
+  margin-top: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
+}
+
+.footer-collapse-link {
+  color: #cbd5e1 !important;
+  font-size: 13.5px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  text-decoration: none !important;
+}
+
+.footer-collapse-link:hover {
+  background: rgba(255, 194, 0, 0.12);
+  color: #ffc200 !important;
+  transform: translateX(4px);
+}
+
+.footer-collapse-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+/* Fallback Dropdown Menu */
+.dropdown-menu-footer {
+  background: #0b1120;
+  border: 1px solid rgba(255, 194, 0, 0.3);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(12px);
+  margin-top: 6px !important;
+  z-index: 1050;
+}
+
+.dropdown-menu-footer .dropdown-item {
+  color: #cbd5e1;
+  font-size: 13.5px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.dropdown-menu-footer .dropdown-item:hover {
+  background: rgba(255, 194, 0, 0.12);
+  color: #ffc200;
+  transform: translateX(4px);
+}
+
+.dropdown-menu-footer .dropdown-divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 6px 0;
+}
+
+/* Contact Block */
+.footer-contact-note {
+  line-height: 1.6;
+}
+
+.footer-contact-row {
+  font-size: 13.5px;
+}
+
+.footer-contact-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(255, 194, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.footer-contact-link {
+  color: #cbd5e1;
+}
+
+.footer-contact-link:hover {
+  color: #ffc200;
+}
+
+.footer-cta-action {
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  font-size: 13px;
+}
+
+.footer-cta-action:hover {
+  background: #ffc200;
+  color: #0f172a !important;
+  box-shadow: 0 4px 14px rgba(255, 194, 0, 0.3);
+}
+
+/* Bottom Bar */
+.footer-bottom-bar {
+  background: #090d16;
+  border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.copyright-text {
+  color: #64748b;
+}
+
+.copyright-text strong {
+  color: #cbd5e1;
+}
+
+.footer-btn-top {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffc200;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.footer-btn-top:hover {
+  background: #ffc200;
+  border-color: #ffc200;
+  color: #0f172a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 194, 0, 0.3);
+}
+
+/* Dark Mode Overrides */
+body.dark-mode .site-footer {
+  background: #080b12;
+  border-top: 1px solid #1e293b;
+}
+
+body.dark-mode .footer-bottom-bar {
+  background: #04060a;
+  border-top-color: #1a2234 !important;
+}
+
+body.dark-mode .footer-social-btn {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+
+
 
 

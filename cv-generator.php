@@ -124,7 +124,7 @@ $userEmail = current_user_email();
     <link rel="stylesheet" href="css/unicons.css">
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="css/tooplate-style.css?v=20260514-cv-gen">
+    <link rel="stylesheet" href="css/tooplate-style.css?v=20261004-footer-v2">
     <link rel="stylesheet" href="css/cv-generator.css?v=20260823-2">
 
     <!-- html2pdf for high quality client-side A4 PDF download -->
@@ -239,7 +239,7 @@ $userEmail = current_user_email();
                         </button>
                     <?php else: ?>
                         <a href="user_login.php" class="cv-btn cv-btn-secondary" title="Login untuk simpan ke cloud">
-                            <i class="uil uil-signin"></i> <span class="d-none d-sm-inline">Login Member</span>
+                            <i class="uil uil-sign-in-alt"></i> <span class="d-none d-sm-inline">Login Member</span>
                         </a>
                     <?php endif; ?>
 
@@ -728,15 +728,7 @@ $userEmail = current_user_email();
     </main>
 
     <!-- Footer -->
-    <footer class="footer py-5">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12 col-12">
-                    <p class="copyright-text text-center">Copyright &copy; <?= date('Y') ?> <?= e($settings['site_brand'] ?? 'Marvel') ?>. Built with passion & precision.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include __DIR__ . '/footer.php'; ?>
 
     <!-- Pass User Session Data to JS -->
     <script>

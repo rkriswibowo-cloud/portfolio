@@ -573,7 +573,8 @@
 .uil-globe:before { content: '\ea03'; } /* '' */
 .uil-gold:before { content: '\ea04'; } /* '' */
 .uil-google-drive:before { content: '\ea05'; } /* '' */
-.uil-graduation-hat:before { content: '\ea06'; } /* '' */
+.uil-graduation-hat:before,
+.uil-graduation-cap:before { content: '\ea06'; } /* '' */
 .uil-graph-bar:before { content: '\ea07'; } /* '' */
 .uil-grid:before { content: '\ea08'; } /* '' */
 .uil-grids:before { content: '\ea09'; } /* '' */
@@ -867,7 +868,8 @@
 .uil-shutter:before { content: '\eb29'; } /* '' */
 .uil-sick:before { content: '\eb2a'; } /* '' */
 .uil-sign-alt:before { content: '\eb2b'; } /* '' */
-.uil-sign-in-alt:before { content: '\eb2c'; } /* '' */
+.uil-sign-in-alt:before,
+.uil-signin:before { content: '\eb2c'; } /* '' */
 .uil-sign-left:before { content: '\eb2d'; } /* '' */
 .uil-sign-out-alt:before { content: '\eb2e'; } /* '' */
 .uil-sign-right:before { content: '\eb2f'; } /* '' */

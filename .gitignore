@@ -7,5 +7,6 @@ Thumbs.db
 # IDE & Editor files
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
+# Uploads (ignore user-submitted files, keep directory structure)
+uploads/assignment_submissions/*
+!uploads/assignment_submissions/.gitkeep

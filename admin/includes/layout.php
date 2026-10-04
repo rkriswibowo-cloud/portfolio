@@ -45,6 +45,7 @@ function admin_header(string $title): void
             'items' => [
                 'courses.php' => ['label' => 'Daftar Course', 'icon' => 'fa-solid fa-book-open-reader'],
                 'course_tokens.php' => ['label' => 'Token Course', 'icon' => 'fa-solid fa-key'],
+                'course_grades.php' => ['label' => 'Penilaian & Export Nilai', 'icon' => 'fa-solid fa-graduation-cap'],
             ],
         ],
         [

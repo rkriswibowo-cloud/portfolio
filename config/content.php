@@ -1676,3 +1676,480 @@ function get_enrollment_tokens(?PDO $pdo = null): array
         return [];
     }
 }
+
+/**
+ * -------------------------------------------------------------
+ * FITUR TUGAS PERTEMUAN & PENILAIAN (ASSIGNMENTS & GRADING)
+ * -------------------------------------------------------------
+ */
+
+function get_course_assignments(int $courseId, ?PDO $pdo = null, bool $activeOnly = false): array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $courseId <= 0) return [];
+    try {
+        $sql = 'SELECT ca.*, cm.title AS meeting_title, cm.sort_order AS meeting_order 
+                FROM course_assignments ca 
+                INNER JOIN course_meetings cm ON cm.id = ca.meeting_id 
+                WHERE cm.course_id = ?';
+        if ($activeOnly) {
+            $sql .= ' AND ca.is_active = 1 AND cm.is_active = 1';
+        }
+        $sql .= ' ORDER BY cm.sort_order ASC, ca.sort_order ASC, ca.id ASC';
+        $st = $pdo->prepare($sql);
+        $st->execute([$courseId]);
+        return $st->fetchAll();
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function get_assignments_by_meeting_ids(array $meetingIds, ?PDO $pdo = null, bool $activeOnly = true): array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || empty($meetingIds)) return [];
+    try {
+        $ids = array_values(array_unique(array_map('intval', $meetingIds)));
+        if (empty($ids)) return [];
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "SELECT * FROM course_assignments WHERE meeting_id IN ($placeholders)";
+        if ($activeOnly) {
+            $sql .= ' AND is_active = 1';
+        }
+        $sql .= ' ORDER BY sort_order ASC, id ASC';
+        $st = $pdo->prepare($sql);
+        $st->execute($ids);
+        $grouped = [];
+        foreach ($st->fetchAll() as $assignment) {
+            $grouped[(int) $assignment['meeting_id']][] = $assignment;
+        }
+        return $grouped;
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function get_assignment_by_id(int $assignmentId, ?PDO $pdo = null): ?array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $assignmentId <= 0) return null;
+    try {
+        $st = $pdo->prepare('SELECT ca.*, cm.course_id, cm.title AS meeting_title, cm.sort_order AS meeting_order, c.title AS course_title 
+                             FROM course_assignments ca 
+                             INNER JOIN course_meetings cm ON cm.id = ca.meeting_id 
+                             INNER JOIN courses c ON c.id = cm.course_id 
+                             WHERE ca.id = ? LIMIT 1');
+        $st->execute([$assignmentId]);
+        $row = $st->fetch();
+        return $row ?: null;
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+function get_user_assignment_submissions(int $userId, array $assignmentIds, ?PDO $pdo = null): array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $userId <= 0 || empty($assignmentIds)) return [];
+    try {
+        $ids = array_values(array_unique(array_map('intval', $assignmentIds)));
+        if (empty($ids)) return [];
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $sql = "SELECT * FROM course_assignment_submissions WHERE user_id = ? AND assignment_id IN ($placeholders)";
+        $st = $pdo->prepare($sql);
+        $st->execute(array_merge([$userId], $ids));
+        $subs = [];
+        foreach ($st->fetchAll() as $sub) {
+            $subs[(int) $sub['assignment_id']] = $sub;
+        }
+        return $subs;
+    } catch (Throwable $e) {
+        return [];
+    }
+}
+
+function get_user_assignment_submission(int $userId, int $assignmentId, ?PDO $pdo = null): ?array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $userId <= 0 || $assignmentId <= 0) return null;
+    try {
+        $st = $pdo->prepare('SELECT * FROM course_assignment_submissions WHERE user_id = ? AND assignment_id = ? LIMIT 1');
+        $st->execute([$userId, $assignmentId]);
+        $row = $st->fetch();
+        return $row ?: null;
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+function upload_assignment_submission_file(array $file): ?array
+{
+    if (empty($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Upload file tugas gagal. Silakan coba lagi.');
+    }
+    $maxSize = 25 * 1024 * 1024; // 25MB
+    if ((int) ($file['size'] ?? 0) > $maxSize) {
+        throw new RuntimeException('Ukuran file tugas maksimal 25MB.');
+    }
+
+    $originalName = basename((string) ($file['name'] ?? 'tugas'));
+    $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+    $allowed = ['pdf', 'zip', 'rar', '7z', 'doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'txt', 'jpg', 'jpeg', 'png'];
+
+    if (!in_array($extension, $allowed, true)) {
+        throw new RuntimeException('Format file tidak didukung. Format yang diizinkan: PDF, ZIP, RAR, DOC/DOCX, PPT/PPTX, XLS/XLSX, Gambar, atau TXT.');
+    }
+
+    $uploadDir = dirname(__DIR__) . '/uploads/assignment_submissions';
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
+        throw new RuntimeException('Direktori penyimpanan tugas tidak dapat dibuat.');
+    }
+
+    $safeBaseName = preg_replace('/[^a-zA-Z0-9_-]+/', '-', pathinfo($originalName, PATHINFO_FILENAME));
+    $safeBaseName = trim((string) $safeBaseName, '-');
+    if ($safeBaseName === '') {
+        $safeBaseName = 'tugas';
+    }
+
+    $fileName = 'tugas-' . date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '.' . $extension;
+    $targetPath = $uploadDir . '/' . $fileName;
+
+    $moved = false;
+    if (is_uploaded_file((string) $file['tmp_name'])) {
+        $moved = move_uploaded_file((string) $file['tmp_name'], $targetPath);
+    } else {
+        $moved = @copy((string) $file['tmp_name'], $targetPath);
+    }
+
+    if (!$moved) {
+        throw new RuntimeException('File tugas gagal disimpan di server.');
+    }
+
+    return [
+        'path' => 'uploads/assignment_submissions/' . $fileName,
+        'name' => $originalName,
+    ];
+}
+
+function delete_assignment_submission_file(?string $path): void
+{
+    if (empty($path)) return;
+    $cleanPath = trim(str_replace('\\', '/', $path));
+    if (strpos($cleanPath, 'uploads/assignment_submissions/') !== 0) return;
+    $fullPath = dirname(__DIR__) . '/' . $cleanPath;
+    if (is_file($fullPath)) {
+        @unlink($fullPath);
+    }
+}
+
+function assignment_submission_storage_path(?string $path): ?string
+{
+    if (empty($path)) return null;
+    $cleanPath = trim(str_replace('\\', '/', $path));
+    if ($cleanPath === '' || preg_match('~^[a-z][a-z0-9+.-]*://~i', $cleanPath)) {
+        return null;
+    }
+    $basePath = realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'assignment_submissions');
+    $filePath = realpath(dirname(__DIR__) . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, ltrim($cleanPath, '/')));
+
+    if ($basePath === false || $filePath === false || !is_file($filePath)) {
+        return null;
+    }
+    $basePrefix = rtrim($basePath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+    if (strncmp($filePath, $basePrefix, strlen($basePrefix)) !== 0) {
+        return null;
+    }
+    return $filePath;
+}
+
+function submit_user_assignment(
+    int $userId,
+    int $assignmentId,
+    string $submissionType,
+    ?string $driveUrl,
+    ?array $uploadedFile,
+    ?string $notes,
+    ?PDO $pdo = null
+): array {
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo) return ['ok' => false, 'message' => 'Database tidak tersedia.'];
+    if ($userId <= 0 || $assignmentId <= 0) return ['ok' => false, 'message' => 'Parameter tidak valid.'];
+
+    $assignment = get_assignment_by_id($assignmentId, $pdo);
+    if (!$assignment || (int) $assignment['is_active'] !== 1) {
+        return ['ok' => false, 'message' => 'Tugas tidak ditemukan atau sedang dinonaktifkan.'];
+    }
+
+    $existing = get_user_assignment_submission($userId, $assignmentId, $pdo);
+    if ($existing && ($existing['status'] ?? 'submitted') === 'graded') {
+        return ['ok' => false, 'message' => 'Tugas sudah selesai dinilai oleh dosen/admin dan tidak dapat diedit atau dikirim ulang lagi.'];
+    }
+
+    $submissionType = in_array($submissionType, ['drive_link', 'file_upload'], true) ? $submissionType : 'drive_link';
+    $driveUrl = trim((string) $driveUrl);
+    $notes = trim((string) $notes);
+
+    $filePath = $existing['file_path'] ?? null;
+    $fileName = $existing['file_name'] ?? null;
+
+    if ($submissionType === 'drive_link') {
+        if ($driveUrl === '') {
+            return ['ok' => false, 'message' => 'Link Google Drive / URL tugas wajib diisi.'];
+        }
+        if (!filter_var($driveUrl, FILTER_VALIDATE_URL)) {
+            return ['ok' => false, 'message' => 'Format URL tidak valid. Sertakan https:// atau http://'];
+        }
+    } else {
+        // file_upload
+        $hasNewFile = !empty($uploadedFile) && ($uploadedFile['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE;
+        if ($hasNewFile) {
+            try {
+                $saved = upload_assignment_submission_file($uploadedFile);
+                if ($saved) {
+                    if (!empty($filePath)) {
+                        delete_assignment_submission_file($filePath);
+                    }
+                    $filePath = $saved['path'];
+                    $fileName = $saved['name'];
+                }
+            } catch (Throwable $e) {
+                return ['ok' => false, 'message' => $e->getMessage()];
+            }
+        } elseif (empty($filePath)) {
+            return ['ok' => false, 'message' => 'Silakan pilih file tugas untuk diunggah.'];
+        }
+    }
+
+    try {
+        if ($existing) {
+            $st = $pdo->prepare('UPDATE course_assignment_submissions 
+                                 SET submission_type = ?, drive_url = ?, file_path = ?, file_name = ?, student_notes = ?, status = \'submitted\', submitted_at = NOW() 
+                                 WHERE id = ?');
+            $st->execute([$submissionType, $driveUrl ?: null, $filePath, $fileName, $notes ?: null, (int) $existing['id']]);
+            $isRevision = ($existing['status'] ?? '') === 'revision';
+            $msg = $isRevision 
+                ? 'Revisi tugas berhasil dikirimkan. Menunggu penilaian ulang oleh admin/dosen.' 
+                : 'Perubahan tugas berhasil disimpan. Menunggu penilaian admin/dosen.';
+        } else {
+            $st = $pdo->prepare('INSERT INTO course_assignment_submissions 
+                                 (assignment_id, user_id, submission_type, drive_url, file_path, file_name, student_notes, status) 
+                                 VALUES (?, ?, ?, ?, ?, ?, ?, \'submitted\')');
+            $st->execute([$assignmentId, $userId, $submissionType, $driveUrl ?: null, $filePath, $fileName, $notes ?: null]);
+            $msg = 'Tugas berhasil dikumpulkan. Menunggu penilaian admin/dosen.';
+        }
+        return ['ok' => true, 'message' => $msg];
+    } catch (Throwable $e) {
+        return ['ok' => false, 'message' => 'Gagal menyimpan pengumpulan tugas: ' . $e->getMessage()];
+    }
+}
+
+function grade_assignment_submission(
+    int $submissionId,
+    ?float $score,
+    ?string $feedback,
+    string $status = 'graded',
+    ?int $adminId = null,
+    ?PDO $pdo = null
+): bool {
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $submissionId <= 0) return false;
+
+    $status = in_array($status, ['graded', 'revision'], true) ? $status : 'graded';
+
+    if ($score !== null) {
+        $score = max(0.0, min(100.0, $score));
+    }
+    $feedback = trim((string) $feedback);
+
+    try {
+        $st = $pdo->prepare('UPDATE course_assignment_submissions 
+                             SET score = ?, feedback = ?, status = ?, graded_by = ?, graded_at = NOW() 
+                             WHERE id = ?');
+        $st->execute([$score, $feedback !== '' ? $feedback : null, $status, $adminId, $submissionId]);
+        return $st->rowCount() >= 0;
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
+/**
+ * Menghitung rekapitulasi nilai kursus untuk 1 siswa.
+ * Logika: Jika ada N tugas aktif, maka bobot masing-masing tugas adalah 100/N %.
+ * Nilai mentah (raw score) per tugas adalah 0 - 100.
+ * Kontribusi tugas = raw_score * ((100/N) / 100) = raw_score / N.
+ * Total nilai akhir maksimal 100%.
+ */
+function calculate_course_grade_summary(int $courseId, int $userId, ?PDO $pdo = null): array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $courseId <= 0 || $userId <= 0) {
+        return [
+            'total_assignments' => 0,
+            'weight_per_assignment' => 0.0,
+            'submitted_count' => 0,
+            'graded_count' => 0,
+            'revision_count' => 0,
+            'final_score' => 0.0,
+            'assignments' => [],
+        ];
+    }
+
+    $assignments = get_course_assignments($courseId, $pdo, true);
+    $totalAssignments = count($assignments);
+    $weightPerAssignment = $totalAssignments > 0 ? (100.0 / $totalAssignments) : 0.0;
+
+    $assignmentIds = array_column($assignments, 'id');
+    $submissions = get_user_assignment_submissions($userId, $assignmentIds, $pdo);
+
+    $submittedCount = 0;
+    $gradedCount = 0;
+    $revisionCount = 0;
+    $totalRawScore = 0.0;
+    $items = [];
+
+    foreach ($assignments as $a) {
+        $aId = (int) $a['id'];
+        $sub = $submissions[$aId] ?? null;
+        $isSubmitted = !empty($sub);
+        if ($isSubmitted) {
+            $submittedCount++;
+        }
+        $subStatus = $sub['status'] ?? ($isSubmitted && $sub['score'] !== null ? 'graded' : ($isSubmitted ? 'submitted' : 'none'));
+        $isGraded = ($isSubmitted && $subStatus === 'graded' && $sub['score'] !== null);
+        $isRevision = ($isSubmitted && $subStatus === 'revision');
+        if ($isRevision) {
+            $revisionCount++;
+        }
+
+        $rawScore = $isGraded ? (float) $sub['score'] : null;
+        if ($isGraded) {
+            $gradedCount++;
+            $contribution = round($rawScore / $totalAssignments, 2);
+            $totalRawScore += $rawScore;
+        } else {
+            $contribution = 0.0;
+        }
+
+        $items[] = [
+            'assignment' => $a,
+            'submission' => $sub,
+            'is_submitted' => $isSubmitted,
+            'status' => $subStatus,
+            'is_graded' => $isGraded,
+            'is_revision' => $isRevision,
+            'raw_score' => $rawScore,
+            'weight' => round($weightPerAssignment, 2),
+            'contribution' => $contribution,
+        ];
+    }
+
+    $finalScore = $totalAssignments > 0 ? round(min(100.0, $totalRawScore / $totalAssignments), 2) : 0.0;
+
+    return [
+        'total_assignments' => $totalAssignments,
+        'weight_per_assignment' => round($weightPerAssignment, 2),
+        'submitted_count' => $submittedCount,
+        'graded_count' => $gradedCount,
+        'revision_count' => $revisionCount,
+        'final_score' => $finalScore,
+        'assignments' => $items,
+    ];
+}
+
+/**
+ * Menghasilkan rekap nilai seluruh siswa terdaftar pada suatu course.
+ */
+function get_course_all_students_grade_report(int $courseId, ?PDO $pdo = null): array
+{
+    $pdo = $pdo ?: pdo(true);
+    if (!$pdo || $courseId <= 0) return ['course' => null, 'assignments' => [], 'students' => [], 'total_assignments' => 0, 'weight_per_assignment' => 0.0];
+
+    $course = get_course_by_id($courseId, $pdo, false);
+    if (!$course) return ['course' => null, 'assignments' => [], 'students' => [], 'total_assignments' => 0, 'weight_per_assignment' => 0.0];
+
+    $assignments = get_course_assignments($courseId, $pdo, true);
+    $totalAssignments = count($assignments);
+    $weightPerAssignment = $totalAssignments > 0 ? (100.0 / $totalAssignments) : 0.0;
+
+    $sql = 'SELECT u.id AS user_id, u.name AS user_name, u.email AS user_email, e.created_at AS enrolled_at, COALESCE(e.is_active, 1) AS enrollment_is_active 
+            FROM course_enrollments e 
+            INNER JOIN users u ON u.id = e.user_id 
+            WHERE e.course_id = ? 
+            ORDER BY u.name ASC';
+    $st = $pdo->prepare($sql);
+    $st->execute([$courseId]);
+    $studentsRaw = $st->fetchAll();
+
+    $assignmentIds = array_column($assignments, 'id');
+    $students = [];
+
+    foreach ($studentsRaw as $stu) {
+        $uId = (int) $stu['user_id'];
+        $userSubs = !empty($assignmentIds) ? get_user_assignment_submissions($uId, $assignmentIds, $pdo) : [];
+
+        $taskDetails = [];
+        $totalRawScore = 0.0;
+        $submittedCount = 0;
+        $gradedCount = 0;
+        $revisionCount = 0;
+
+        foreach ($assignments as $a) {
+            $aId = (int) $a['id'];
+            $sub = $userSubs[$aId] ?? null;
+            $hasSub = !empty($sub);
+            if ($hasSub) $submittedCount++;
+
+            $subStatus = $sub['status'] ?? ($hasSub && $sub['score'] !== null ? 'graded' : ($hasSub ? 'submitted' : 'none'));
+            $isGraded = ($hasSub && $subStatus === 'graded' && $sub['score'] !== null);
+            $isRevision = ($hasSub && $subStatus === 'revision');
+            if ($isRevision) $revisionCount++;
+
+            $rawScore = $isGraded ? (float) $sub['score'] : null;
+            if ($isGraded) {
+                $gradedCount++;
+                $contrib = round($rawScore / $totalAssignments, 2);
+                $totalRawScore += $rawScore;
+            } else {
+                $contrib = 0.0;
+            }
+
+            $taskDetails[$aId] = [
+                'submission' => $sub,
+                'has_submission' => $hasSub,
+                'status' => $subStatus,
+                'is_graded' => $isGraded,
+                'is_revision' => $isRevision,
+                'raw_score' => $rawScore,
+                'contribution' => $contrib,
+                'feedback' => $sub['feedback'] ?? null,
+            ];
+        }
+
+        $finalScore = $totalAssignments > 0 ? round(min(100.0, $totalRawScore / $totalAssignments), 2) : 0.0;
+
+        $students[] = [
+            'user_id' => $uId,
+            'user_name' => $stu['user_name'],
+            'user_email' => $stu['user_email'],
+            'enrolled_at' => $stu['enrolled_at'],
+            'is_active' => (int) $stu['enrollment_is_active'] === 1,
+            'submitted_count' => $submittedCount,
+            'graded_count' => $gradedCount,
+            'revision_count' => $revisionCount,
+            'final_score' => $finalScore,
+            'tasks' => $taskDetails,
+        ];
+    }
+
+    return [
+        'course' => $course,
+        'assignments' => $assignments,
+        'total_assignments' => $totalAssignments,
+        'weight_per_assignment' => round($weightPerAssignment, 2),
+        'students' => $students,
+    ];
+}
+
